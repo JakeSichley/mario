@@ -15,9 +15,10 @@ def play():
     pygame.display.set_caption("Mario")
     settings = Settings()
     main_clock = pygame.time.Clock()
-    pc = Player(screen)
     camera = Camera()
+    pc = Player(screen, camera)
 
+    test_box = pygame.Rect(700, 500, 25, 25)
 
     # Main loop
     game_over = False
@@ -29,7 +30,9 @@ def play():
 
         # draw
         gf.update_screen(settings=settings, screen=screen)
-        pc.draw()
+        pc.draw1(camera)
+
+        pygame.draw.rect(screen, (200, 0, 0), test_box.move(camera.rect.topleft))
         pygame.display.update()
 
         main_clock.tick(FPS)

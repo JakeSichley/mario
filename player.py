@@ -5,10 +5,12 @@ from timer import Timer
 
 
 class Player(Sprite):
-    def __init__(self, screen):
+    def __init__(self, screen, camera):
         super().__init__()
         self.screen = screen
-        self.rect = pygame.Rect(100, 100, 25, 25)
+        self.camera = camera
+        idle_image = pygame.image.load('images/player/idle.bmp')
+        self.rect = idle_image.get_rect()
         self.y = float(self.rect.y)
         self.x = float(self.rect.x)
 
@@ -19,14 +21,20 @@ class Player(Sprite):
         self.jump_power = 10
         self.is_grounded = False
 
+        # animations
+        self.walk_anim = Timer([pygame.image.load('images/player/walk1.bmp'),
+                                pygame.image.load('images/player/walk3.bmp')])
+        self.idle_anim = Timer([idle_image])
+        self.current_anim = self.idle_anim
+
     def update(self):
         self.move()
 
-    def draw(self, camera):
-        pygame.draw.rect(self.screen, (250, 250, 250), camera.apply(self))
+    def draw1(self, camera):
+        self.screen.blit(self.current_anim.imagerect(), camera.apply(self))
 
     def draw(self):
-        pygame.draw.rect(self.screen, (250, 250, 250), self.rect)
+        self.screen.blit(self.current_anim.imagerect(), self.rect)
 
     def move(self):
         key_pressed = pygame.key.get_pressed()
@@ -48,11 +56,19 @@ class Player(Sprite):
         if jump and self.is_grounded:
             self.vel.y = -self.jump_power
         if left:  # move left
-            self.vel.x = -self.speed
+            if not self.camera.out_of_camera(self):
+                self.vel.x = -self.speed
+            else:
+                self.vel.x = 0
         if right:  # move right
             self.vel.x = self.speed
         if not (left or right):
             self.vel.x = 0
+
+        if self.vel.x > 0 or self.vel.x < 0:
+            self.current_anim = self.walk_anim
+        if self.vel.x == 0:
+            self.current_anim = self.idle_anim
 
         self.y += self.vel.y
         self.x += self.vel.x
