@@ -12,8 +12,9 @@ class Player(Sprite):
         self.settings = settings
         self.stats = stats
         self.camera = camera
-        idle_image = pygame.image.load('images/player/idle.bmp')
-        self.rect = idle_image.get_rect()
+        self.idle_image = pygame.image.load('images/player/idle.bmp')
+        self.big_idle_image = pygame.image.load('images/player/big_idle.bmp')
+        self.rect = self.idle_image.get_rect()
         self.y = float(self.rect.y)
         self.x = float(self.rect.x)
 
@@ -35,8 +36,13 @@ class Player(Sprite):
         self.walk_anim = Timer([pygame.image.load('images/player/walk1.bmp'),
                                 pygame.image.load('images/player/walk2.bmp'),
                                 pygame.image.load('images/player/walk3.bmp')])
-        self.idle_anim = Timer([idle_image])
+        self.idle_anim = Timer([self.idle_image])
         self.jump_anim = Timer([pygame.image.load('images/player/jump.bmp')])
+        self.big_idle_anim = Timer([self.big_idle_image])
+        self.big_walk_anim = Timer([pygame.image.load('images/player/big_walk1.bmp'),
+                                    pygame.image.load('images/player/big_walk2.bmp'),
+                                    pygame.image.load('images/player/big_walk3.bmp')])
+        self.big_jump_anim = Timer([pygame.image.load('images/player/big_jump.bmp')])
         self.current_anim = self.idle_anim
 
     def update(self):
@@ -63,12 +69,12 @@ class Player(Sprite):
         self.rect.y = int(self.y)
         self.rect.x = int(self.x)
 
-    def draw1(self, camera):
+    def draw1(self):
         if self.facing_right:
             image = self.current_anim.imagerect()
         else:
             image = pygame.transform.flip(self.current_anim.imagerect(), True, False)
-        self.screen.blit(image, camera.apply(self))
+        self.screen.blit(image, self.camera.apply(self))
 
     def draw(self):
         self.screen.blit(self.current_anim.imagerect(), self.rect)
@@ -78,7 +84,6 @@ class Player(Sprite):
         key_pressed = pygame.key.get_pressed()
         left = key_pressed[K_a] or key_pressed[K_LEFT]
         right = key_pressed[K_d] or key_pressed[K_RIGHT]
-        jump = key_pressed[K_w]
 
         # gravity
         if not self.is_grounded:
@@ -103,21 +108,25 @@ class Player(Sprite):
 
         # set animation
         if not self.is_grounded:  # jump/fall animation
-            self.current_anim = self.jump_anim
+            self.current_anim = self.jump_anim if self.level == 1 else self.big_jump_anim
         else:
             if self.vel.x != 0:  # walk animation
-                self.current_anim = self.walk_anim
+                self.current_anim = self.walk_anim if self.level == 1 else self.big_walk_anim
             if self.vel.x == 0:
-                self.current_anim = self.idle_anim
+                self.current_anim = self.idle_anim if self.level == 1 else self.big_idle_anim
 
     def level_up(self):
         if self.level == 1:
             self.level += 1
+            self.current_anim = self.big_idle_anim
+            self.rect = self.big_idle_image.get_rect()
 
     def get_hit(self):
         if not self.invulnerable:
             if self.level >= 1:
                 self.level = 1
+                self.current_anim = self.idle_anim
+                self.rect = self.idle_image.get_rect()
                 self.invulnerable = True
                 self.invuln_timer = self.invuln_time
             else:
