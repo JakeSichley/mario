@@ -3,6 +3,10 @@ import sys
 from pygame.locals import *
 
 
+RIGHT_KEYS = [K_d, K_RIGHT]
+LEFT_KEYS = [K_a, K_LEFT]
+
+
 def terminate():
     pygame.quit()
     sys.exit()
@@ -19,7 +23,8 @@ def check_inputs(player):
 
 
 def check_keydown(event, player):
-    pass
+    if event.key == K_w:
+        player.jump()
 
 
 def check_keyup(event, player):
