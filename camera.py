@@ -26,4 +26,4 @@ class Camera:
         # self.rect.y = -target.rect.y + 300
 
     def out_of_camera(self, target):
-        return self.rect.x + target.rect.x <= 0
+        return self.rect.x + target.rect.x < 0

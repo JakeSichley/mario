@@ -37,10 +37,5 @@ def update_screen(settings, screen):
 
 
 def update_player(player, sprites):
-    player.update()
+    player.update(sprites)
 
-    sprite = pygame.sprite.spritecollideany(player, sprites)
-    if sprite is not None:
-        if sprite.tag == 'item':
-            player.level_up()
-            sprite.kill()

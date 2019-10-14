@@ -11,13 +11,13 @@ from pygame.sprite import Group
 FPS = 60
 
 
-class Mushroom(Sprite):
-    def __init__(self, screen, x, y):
+class Tile(Sprite):
+    def __init__(self, screen, tag, image, x, y):
         super().__init__()
         self.screen = screen
-        self.image = pygame.image.load('images/Tile/box.png')
+        self.image = image
         self.rect = self.image.get_rect()
-        self.tag = 'item'
+        self.tag = tag
         self.rect.x = x
         self.rect.y = y
 
@@ -36,9 +36,15 @@ def play():
     pc = Player(screen=screen, settings=settings, stats=stats, camera=camera)
     hud = HUD(screen=screen, settings=settings, stats=stats)
 
-    test_box = Mushroom(screen, 700, 350)
     sprites = Group()
-    sprites.add(test_box)
+    item_img = pygame.image.load('images/Tile/box.png')
+    block_img = pygame.image.load('images/Tile/brick.png')
+    sprites.add(Tile(screen, 'item', item_img, 700, 310))
+    sprites.add(Tile(screen, 'item', item_img, 1000, 310))
+    for i in range(100):
+        sprites.add(Tile(screen, 'brick', block_img, i*16, 400))
+    sprites.add(Tile(screen, 'brick', block_img, 800, 310))
+
 
     # Main loop
     game_over = False
