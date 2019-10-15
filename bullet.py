@@ -4,9 +4,11 @@ from timer import Timer
 
 
 class Bullet(Sprite):
-    def __init__(self, screen):
+    def __init__(self, screen, direction):
         super().__init__()
         self.screen = screen
+        self.speed = 6
+        self.direction = direction
         self.anim = Timer([pygame.image.load('images/player/fire1.bmp'),
                            pygame.image.load('images/player/fire2.bmp'),
                            pygame.image.load('images/player/fire3.bmp'),

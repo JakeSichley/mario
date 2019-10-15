@@ -6,14 +6,13 @@ class Camera:
         self.settings = settings
         self.rect = pygame.Rect(0, 0, settings.scr_width, settings.scr_height)
         self.x = float(self.rect.x)
-        self.vel_x = 0
 
     def apply(self, target):
         return target.rect.move(self.rect.topleft)
 
     def update(self, target):
 
-        if target.rect.x + self.rect.x >= int(self.settings.scr_width/3):
+        if target.rect.x + self.rect.x >= int(self.settings.scr_width/2.5):
             self.x += -target.vel.x
         # elif self.rect.x + target.rect.x < 100:
         #    self.x += 4
@@ -27,3 +26,7 @@ class Camera:
 
     def out_of_camera(self, target):
         return self.rect.x + target.rect.x < 0
+
+    def reset(self):
+        self.rect.x = self.rect.y = 0
+        self.x = float(self.rect.x)

@@ -33,8 +33,8 @@ def play():
     stats = GameStats()
     main_clock = pygame.time.Clock()
     camera = Camera(settings=settings)
-    pc = Player(screen=screen, settings=settings, stats=stats, camera=camera)
     hud = HUD(screen=screen, settings=settings, stats=stats)
+    pc = Player(screen=screen, settings=settings, stats=stats, camera=camera, hud=hud)
 
     sprites = Group()
     item_img = pygame.image.load('images/Tile/box.png')
@@ -65,7 +65,7 @@ def play():
         hud.draw()
         pygame.display.update()
 
-        main_clock.tick(FPS)
+        main_clock.tick(60)
 
 
 play()

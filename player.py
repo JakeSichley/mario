@@ -5,13 +5,14 @@ from timer import Timer
 
 
 class Player(Sprite):
-    def __init__(self, screen, settings, stats, camera):
+    def __init__(self, screen, settings, stats, camera, hud):
         super().__init__()
         self.screen = screen
         self.screen_rect = screen.get_rect()
         self.settings = settings
         self.stats = stats
         self.camera = camera
+        self.hud = hud
         self.idle_image = pygame.image.load('images/player/idle.bmp')
         self.big_idle_image = pygame.image.load('images/player/big_idle.bmp')
         self.big_crouch_image = pygame.image.load('images/player/big_crouch.bmp')
@@ -65,6 +66,10 @@ class Player(Sprite):
         self.current_anim = self.idle_anim
 
     def update(self, sprites):
+        # check falling off:
+        if self.rect.y + self.camera.rect.y > self.screen_rect.height:
+            self.die()
+
         # check invulnerable timer
         if self.invulnerable:
             if self.invuln_timer > 0:
@@ -78,19 +83,14 @@ class Player(Sprite):
         if sprites_hit:
             for s in sprites_hit:
                 if s.tag == 'item':
-                    self.level_up(2)
+                    if self.level < 2:
+                        self.level_up(2)
                     s.kill()
                 if s.tag == 'flower':
                     self.level_up(3)
                     s.kill()
                 if s.tag == 'brick':
                     self.collide_brick(s)
-                    # if self.vel.x > 0:
-                    #    self.x = sprite.rect.left - self.rect.width
-                    #   self.rect.x = int(self.x)
-                    # elif self.vel.x < 0:
-                    #   self.x = sprite.rect.right
-                    #  self.rect.x = int(self.x)
                 if s.tag == 'enemy':
                     self.collide_enemy(s)
 
@@ -229,17 +229,17 @@ class Player(Sprite):
         if not self.invulnerable:
             if self.level >= 1:
                 self.level = 1
-                self.current_anim = self.idle_anim
-                self.rect = self.idle_image.get_rect()
-                self.rect.x = int(self.x)
-                self.rect.y = int(self.y)
+                self.change_rect(self.idle_image.get_rect())
                 self.invulnerable = True
                 self.invuln_timer = self.invuln_time
             else:
                 self.die()
 
     def die(self):
-        self.stats.lives_left -= 1
+        if self.stats.lives_left >= 0:
+            self.stats.lives_left -= 1
+            self.hud.prep_lives()
+            self.respawn()
 
     def jump(self):
         self.vel.y = -self.jump_power
@@ -247,20 +247,38 @@ class Player(Sprite):
         self.rect.y = int(self.y)
 
     def respawn(self):
-        self.rect.x = 0
-        self.rect.y = 0
+        self.level = 1
+        self.change_rect(self.idle_image.get_rect())
+        self.camera.reset()
+        self.rect.x = self.rect.y = 0
+        self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
         self.dead = False
 
     def collide_brick(self, brick):
-        if brick.rect.top <= self.rect.bottom < brick.rect.bottom:
-            self.rect.bottom = brick.rect.top + 1
-            self.is_grounded = True
-            self.vel.y = 0
-        if self.vel.y < 0:
-            self.rect.top = brick.rect.bottom
-            self.vel.y = 0
-
-        self.y = float(self.rect.y)
+        c = self.rect.clip(brick.rect)  # collision rect
+        if c.width >= c.height:
+            if self.vel.y >= 0:
+                self.rect.bottom = brick.rect.top + 1
+                self.y = float(self.rect.y)
+                self.is_grounded = True
+                self.vel.y = 0
+            if self.vel.y < 0:
+                if brick.tag == 'brick' and self.level > 1:
+                    brick.kill()
+                    print('brick broken')
+                self.rect.top = brick.rect.bottom
+                self.y = float(self.rect.y)
+                self.vel.y = 0
+        if c.width < c.height:
+            if self.rect.right > brick.rect.left > self.rect.left:
+                self.vel.x = 0
+                self.rect.right = brick.rect.left
+                self.x = float(self.rect.x)
+            if self.rect.left < brick.rect.right < self.rect.right:
+                self.vel.x = 0
+                self.rect.left = brick.rect.right
+                self.x = float(self.rect.x)
 
     def collide_enemy(self, enemy):
         pass
