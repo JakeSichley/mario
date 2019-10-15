@@ -23,7 +23,7 @@ def check_inputs(player):
 
 
 def check_keydown(event, player):
-    if event.key == K_w:
+    if event.key in [K_UP, K_w]:
         player.jump()
 
 

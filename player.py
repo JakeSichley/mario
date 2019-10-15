@@ -14,18 +14,23 @@ class Player(Sprite):
         self.camera = camera
         self.idle_image = pygame.image.load('images/player/idle.bmp')
         self.big_idle_image = pygame.image.load('images/player/big_idle.bmp')
+        self.big_crouch_image = pygame.image.load('images/player/big_crouch.bmp')
         self.rect = self.idle_image.get_rect()
         self.y = float(self.rect.y)
         self.x = float(self.rect.x)
 
+        # movement variables
         self.vel = pygame.Vector2()
         self.vel.x, self.vel.y = 0, 0
         self.gravity = 0.3
         self.speed = 4
         self.jump_power = 9
         self.is_grounded = False
+        self.is_sliding = False
+        self.is_crouching = False
 
-        self.level = 1
+        # player's states variables
+        self.level = 1  # 1 = small, 2 = big, 3 = fire
         self.dead = False
         self.invulnerable = False
         self.invuln_time = 2000
@@ -33,18 +38,30 @@ class Player(Sprite):
 
         # animations
         self.facing_right = True
+        # small
         self.walk_anim = Timer([pygame.image.load('images/player/walk1.bmp'),
                                 pygame.image.load('images/player/walk2.bmp'),
                                 pygame.image.load('images/player/walk3.bmp')])
         self.idle_anim = Timer([self.idle_image])
         self.jump_anim = Timer([pygame.image.load('images/player/jump.bmp')])
         self.slide_anim = Timer([pygame.image.load('images/player/slide.bmp')])
+        # big
         self.big_idle_anim = Timer([self.big_idle_image])
         self.big_walk_anim = Timer([pygame.image.load('images/player/big_walk1.bmp'),
                                     pygame.image.load('images/player/big_walk2.bmp'),
                                     pygame.image.load('images/player/big_walk3.bmp')])
         self.big_jump_anim = Timer([pygame.image.load('images/player/big_jump.bmp')])
         self.big_slide_anim = Timer([pygame.image.load('images/player/big_slide.bmp')])
+        self.big_crouch_anim = Timer([self.big_crouch_image])
+        # fire
+        self.fire_idle_anim = Timer([pygame.image.load('images/player/fire_idle.bmp')])
+        self.fire_walk_anim = Timer([pygame.image.load('images/player/fire_walk1.bmp'),
+                                    pygame.image.load('images/player/fire_walk2.bmp'),
+                                    pygame.image.load('images/player/fire_walk3.bmp')])
+        self.fire_jump_anim = Timer([pygame.image.load('images/player/fire_jump.bmp')])
+        self.fire_slide_anim = Timer([pygame.image.load('images/player/fire_slide.bmp')])
+        self.fire_crouch_anim = Timer([pygame.image.load('images/player/fire_crouch.bmp')])
+
         self.current_anim = self.idle_anim
 
     def update(self, sprites):
@@ -61,7 +78,10 @@ class Player(Sprite):
         if sprites_hit:
             for s in sprites_hit:
                 if s.tag == 'item':
-                    self.level_up()
+                    self.level_up(2)
+                    s.kill()
+                if s.tag == 'flower':
+                    self.level_up(3)
                     s.kill()
                 if s.tag == 'brick':
                     self.collide_brick(s)
@@ -91,6 +111,7 @@ class Player(Sprite):
         key_pressed = pygame.key.get_pressed()
         left = key_pressed[K_a] or key_pressed[K_LEFT]
         right = key_pressed[K_d] or key_pressed[K_RIGHT]
+        crouch = key_pressed[K_s] or key_pressed[K_DOWN]
 
         # gravity
         if not self.is_grounded:
@@ -100,44 +121,109 @@ class Player(Sprite):
         else:
             self.vel.y = 0
 
-        # move
-        if left:  # move left
-            if self.facing_right:
-                self.facing_right = False
-            if not self.camera.out_of_camera(self):
-                self.vel.x -= 0.1
-                if self.vel.x <= -self.speed:
-                    self.vel.x = -self.speed
+        # crouch
+        if self.level > 1:
+            if self.is_grounded:
+                self.is_crouching = crouch
             else:
-                self.vel.x = 0
-        if right:  # move right
-            if not self.facing_right:
-                self.facing_right = True
-            self.vel.x += 0.1
-            if self.vel.x >= self.speed:
-                self.vel.x = self.speed
-        if not (left or right):
-            self.vel.x = 0
+                self.is_crouching = crouch and self.is_crouching
+
+            if self.is_crouching:
+                self.change_rect(self.big_crouch_image.get_rect())
+            else:
+                self.change_rect(self.big_idle_image.get_rect())
+
+        # move
+        if not self.is_crouching:
+            if left:  # move left
+                if self.vel.x > 0:
+                    self.is_sliding = True
+                else:
+                    self.is_sliding = False
+
+                if self.facing_right:
+                    self.facing_right = False
+                if not self.camera.out_of_camera(self):
+                    self.vel.x -= 0.1
+                    if self.vel.x <= -self.speed:
+                        self.vel.x = -self.speed
+                else:
+                    self.vel.x = 0
+            if right:  # move right
+                if self.vel.x < 0:
+                    self.is_sliding = True
+                else:
+                    self.is_sliding = False
+
+                if not self.facing_right:
+                    self.facing_right = True
+                self.vel.x += 0.1
+                if self.vel.x >= self.speed:
+                    self.vel.x = self.speed
+        if not (left or right) or self.is_crouching:
+            self.is_sliding = False
+            if self.vel.x > 0:
+                self.vel.x -= 0.1
+                if self.vel.x <= 0:
+                    self.vel.x = 0
+            elif self.vel.x < 0:
+                self.vel.x += 0.1
+                if self.vel.x >= 0:
+                    self.vel.x = 0
 
     def update_animation(self):
-        # set animation
-        if self.vel.y != 0:  # jump/fall animation
-            self.current_anim = self.jump_anim if self.level == 1 else self.big_jump_anim
+        if self.is_crouching:  # crouch
+            if self.level == 2:
+                self.current_anim = self.big_crouch_anim
+            elif self.level == 3:
+                self.current_anim = self.fire_crouch_anim
         else:
-            if self.vel.x != 0:  # walk animation
-                self.current_anim = self.walk_anim if self.level == 1 else self.big_walk_anim
-            if self.vel.x == 0:
-                self.current_anim = self.idle_anim if self.level == 1 else self.big_idle_anim
+            if self.vel.y != 0:  # jump/fall animation
+                if self.level == 1:
+                    self.current_anim = self.jump_anim
+                elif self.level == 2:
+                    self.current_anim = self.big_jump_anim
+                else:
+                    self.current_anim = self.fire_jump_anim
+            else:
+                if self.is_sliding:  # slide animation
+                    if self.level == 1:
+                        self.current_anim = self.slide_anim
+                    elif self.level == 2:
+                        self.current_anim = self.big_slide_anim
+                    else:
+                        self.current_anim = self.fire_slide_anim
+                else:
+                    if self.vel.x != 0:  # walk animation
+                        if self.level == 1:
+                            self.current_anim = self.walk_anim
+                        elif self.level == 2:
+                            self.current_anim = self.big_walk_anim
+                        else:
+                            self.current_anim = self.fire_walk_anim
+                    if self.vel.x == 0:  # idle animation
+                        if self.level == 1:
+                            self.current_anim = self.idle_anim
+                        elif self.level == 2:
+                            self.current_anim = self.big_idle_anim
+                        else:
+                            self.current_anim = self.fire_idle_anim
 
-    def level_up(self):
-        if self.level == 1:
-            self.level += 1
-            bot = self.rect.bottom
+    def level_up(self, new_level):
+        self.level = new_level
+        if self.level == 2:
+            self.change_rect(self.big_idle_image.get_rect())
             self.current_anim = self.big_idle_anim
-            self.rect = self.big_idle_image.get_rect()
-            self.rect.x = int(self.x)
-            self.rect.bottom = bot
-            self.y = float(self.rect.y)
+        if self.level >= 3:
+            self.change_rect(self.big_idle_image.get_rect())
+            self.current_anim = self.fire_idle_anim
+
+    def change_rect(self, new_rect):
+        bot = self.rect.bottom
+        self.rect = new_rect
+        self.rect.x = int(self.x)
+        self.rect.bottom = bot
+        self.y = float(self.rect.y)
 
     def get_hit(self):
         if not self.invulnerable:
@@ -156,10 +242,9 @@ class Player(Sprite):
         self.stats.lives_left -= 1
 
     def jump(self):
-        if self.is_grounded:
-            self.vel.y = -self.jump_power
-            self.y += self.vel.y
-            self.rect.y = int(self.y)
+        self.vel.y = -self.jump_power
+        self.y += self.vel.y
+        self.rect.y = int(self.y)
 
     def respawn(self):
         self.rect.x = 0

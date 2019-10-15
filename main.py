@@ -39,12 +39,14 @@ def play():
     sprites = Group()
     item_img = pygame.image.load('images/Tile/box.png')
     block_img = pygame.image.load('images/Tile/brick.png')
+    flower_img = pygame.image.load('images/Tile/flower.bmp')
     sprites.add(Tile(screen, 'item', item_img, 700, 310))
     sprites.add(Tile(screen, 'item', item_img, 1000, 310))
     for i in range(100):
         sprites.add(Tile(screen, 'brick', block_img, i*16, 400))
     sprites.add(Tile(screen, 'brick', block_img, 800, 310))
-
+    sprites.add(Tile(screen, 'brick', block_img, 900, 380))
+    sprites.add(Tile(screen, 'flower', flower_img, 1200, 310))
 
     # Main loop
     game_over = False
