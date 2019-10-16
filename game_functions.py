@@ -25,6 +25,8 @@ def check_inputs(player):
 def check_keydown(event, player):
     if event.key in [K_UP, K_w]:
         player.jump()
+    if event.key == K_SPACE:
+        player.fire()
 
 
 def check_keyup(event, player):

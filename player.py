@@ -2,6 +2,8 @@ import pygame
 from pygame.sprite import Sprite
 from pygame.locals import *
 from timer import Timer
+from bullet import Bullet
+from pygame.sprite import Group
 
 
 class Player(Sprite):
@@ -13,6 +15,7 @@ class Player(Sprite):
         self.stats = stats
         self.camera = camera
         self.hud = hud
+        self.bullets = Group()
         self.idle_image = pygame.image.load('images/player/idle.bmp')
         self.big_idle_image = pygame.image.load('images/player/big_idle.bmp')
         self.big_crouch_image = pygame.image.load('images/player/big_crouch.bmp')
@@ -34,7 +37,7 @@ class Player(Sprite):
         self.level = 1  # 1 = small, 2 = big, 3 = fire
         self.dead = False
         self.invulnerable = False
-        self.invuln_time = 2000
+        self.invuln_time = 1500
         self.invuln_timer = self.invuln_time
 
         # animations
@@ -62,6 +65,7 @@ class Player(Sprite):
         self.fire_jump_anim = Timer([pygame.image.load('images/player/fire_jump.bmp')])
         self.fire_slide_anim = Timer([pygame.image.load('images/player/fire_slide.bmp')])
         self.fire_crouch_anim = Timer([pygame.image.load('images/player/fire_crouch.bmp')])
+        self.fire_throw_anim = Timer([pygame.image.load('images/player/fire_throw.bmp')])
 
         self.current_anim = self.idle_anim
 
@@ -72,9 +76,7 @@ class Player(Sprite):
 
         # check invulnerable timer
         if self.invulnerable:
-            if self.invuln_timer > 0:
-                self.invuln_timer -= pygame.time.Clock().tick()
-            else:
+            if pygame.time.get_ticks() - self.invuln_timer > self.invuln_time:
                 self.invulnerable = False
 
         # check collision
@@ -105,6 +107,10 @@ class Player(Sprite):
         self.rect.x = int(self.x)
 
         self.update_animation()
+
+        # update bullets
+        for b in self.bullets:
+            b.update(sprites)
 
     def move(self):
         # key inputs
@@ -227,19 +233,31 @@ class Player(Sprite):
 
     def get_hit(self):
         if not self.invulnerable:
-            if self.level >= 1:
+            if self.level > 1:
                 self.level = 1
                 self.change_rect(self.idle_image.get_rect())
                 self.invulnerable = True
-                self.invuln_timer = self.invuln_time
+                self.invuln_timer = pygame.time.get_ticks()
             else:
                 self.die()
 
     def die(self):
-        if self.stats.lives_left >= 0:
-            self.stats.lives_left -= 1
-            self.hud.prep_lives()
-            self.respawn()
+        #if self.stats.lives_left >= 0:
+        self.stats.lives_left -= 1
+        self.hud.prep_lives()
+        self.respawn()
+
+    def fire(self):
+        if self.level == 3:
+            if len(self.bullets) < self.settings.bullet_limit:
+                if self.facing_right:
+                    d = 1
+                    x = self.rect.right
+                else:
+                    d = -1
+                    x = self.rect.left
+                y = self.rect.centery
+                self.bullets.add(Bullet(screen=self.screen, direction=d, x=x, y=y))
 
     def jump(self):
         self.vel.y = -self.jump_power
@@ -281,7 +299,7 @@ class Player(Sprite):
                 self.x = float(self.rect.x)
 
     def collide_enemy(self, enemy):
-        pass
+        self.get_hit()
 
     def draw1(self):
         if self.facing_right:
@@ -289,6 +307,10 @@ class Player(Sprite):
         else:
             image = pygame.transform.flip(self.current_anim.imagerect(), True, False)
         self.screen.blit(image, self.camera.apply(self))
+
+        # draw bullets
+        for b in self.bullets:
+            b.draw(self.camera)
 
     def draw(self):
         self.screen.blit(self.current_anim.imagerect(), self.rect)
