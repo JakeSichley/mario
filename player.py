@@ -32,6 +32,7 @@ class Player(Sprite):
         self.is_grounded = False
         self.is_sliding = False
         self.is_crouching = False
+        self.is_firing = False
 
         # player's states variables
         self.level = 1  # 1 = small, 2 = big, 3 = fire
@@ -65,7 +66,8 @@ class Player(Sprite):
         self.fire_jump_anim = Timer([pygame.image.load('images/player/fire_jump.bmp')])
         self.fire_slide_anim = Timer([pygame.image.load('images/player/fire_slide.bmp')])
         self.fire_crouch_anim = Timer([pygame.image.load('images/player/fire_crouch.bmp')])
-        self.fire_throw_anim = Timer([pygame.image.load('images/player/fire_throw.bmp')])
+        self.fire_throw_anim = Timer([pygame.image.load('images/player/fire_throw.bmp')],
+                                     wait=150, step=0, looponce=True)
 
         self.current_anim = self.idle_anim
 
@@ -178,6 +180,12 @@ class Player(Sprite):
                     self.vel.x = 0
 
     def update_animation(self):
+        if self.is_firing:
+            if self.current_anim.finished:
+                self.is_firing = False
+            else:
+                return
+
         if self.is_crouching:  # crouch
             if self.level == 2:
                 self.current_anim = self.big_crouch_anim
@@ -219,10 +227,8 @@ class Player(Sprite):
         self.level = new_level
         if self.level == 2:
             self.change_rect(self.big_idle_image.get_rect())
-            self.current_anim = self.big_idle_anim
         if self.level >= 3:
             self.change_rect(self.big_idle_image.get_rect())
-            self.current_anim = self.fire_idle_anim
 
     def change_rect(self, new_rect):
         bot = self.rect.bottom
@@ -258,6 +264,10 @@ class Player(Sprite):
                     x = self.rect.left
                 y = self.rect.centery
                 self.bullets.add(Bullet(screen=self.screen, direction=d, x=x, y=y))
+                if not self.is_crouching:
+                    self.is_firing = True
+                    self.fire_throw_anim.reset()
+                    self.current_anim = self.fire_throw_anim
 
     def jump(self):
         self.vel.y = -self.jump_power
