@@ -4,14 +4,14 @@ from timer import Timer
 
 
 class Enemy(Sprite):
-    def __init__(self, screen, frames, point, x, y):
+    def __init__(self, screen, frames, point, left, bot):
         super().__init__()
         self.tag = 'enemy'
         self.screen = screen
         self.anim = Timer(frames)
         self.rect = frames[0].get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.x = left
+        self.rect.bottom = bot
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
         self.point = point
@@ -29,7 +29,7 @@ class Goomba(Enemy):
         self.screen_rect = screen.get_rect()
         self.frames = [pygame.image.load('images/enemy/goomba1.bmp'),
                        pygame.image.load('images/enemy/goomba2.bmp')]
-        super().__init__(screen=screen, frames=self.frames, point=100, x=x, y=y)
+        super().__init__(screen=screen, frames=self.frames, point=100, left=x, bot=y)
 
         self.is_grounded = False
         self.chasing_player = False

@@ -19,16 +19,23 @@ class StageManager:
         for s in self.sprites:
             s.draw(camera)
 
-    def load_stage(self, stage):
+    def load_stage(self, stage):  # character's position in txt file is left bot coordinate
         item_img = pygame.image.load('images/Tile/box.png')
         block_img = pygame.image.load('images/Tile/brick.png')
         flower_img = pygame.image.load('images/Tile/flower.bmp')
-        self.sprites.add(Tile(self.screen, 'item', item_img, 700, 310))
-        self.sprites.add(Tile(self.screen, 'item', item_img, 1000, 310))
-        for i in range(100):
-            self.sprites.add(Tile(self.screen, 'brick', block_img, i * 16, 400))
-        self.sprites.add(Tile(self.screen, 'brick', block_img, 800, 310))
-        self.sprites.add(Tile(self.screen, 'brick', block_img, 1100, 380))
-        self.sprites.add(Tile(self.screen, 'brick', block_img, 900, 380))
-        self.sprites.add(Tile(self.screen, 'flower', flower_img, 200, 310))
-        self.sprites.add(Goomba(self.screen, 950, 300))
+        with open('stage/stage1.txt', 'r') as f:
+            row = 1
+            for l in f:
+                col = 0
+                for c in l:
+                    if c == 'b':  # brick
+                        self.sprites.add(Tile(self.screen, 'brick', block_img, col*16, row*16))
+                    if c == 'i':  # item
+                        self.sprites.add(Tile(self.screen, 'item', item_img, col*16, row*16))
+                    if c == 'f':  # flower
+                        self.sprites.add(Tile(self.screen, 'flower', flower_img, col*16, row*16))
+                    if c == 'g':  # goomba
+                        self.sprites.add(Goomba(self.screen, col*16, row*16))
+                    col += 1
+                row += 1
+        f.close()

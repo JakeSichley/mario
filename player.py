@@ -286,24 +286,24 @@ class Player(Sprite):
     def collide_brick(self, brick):
         c = self.rect.clip(brick.rect)  # collision rect
         if c.width >= c.height:
-            if self.vel.y >= 0:
+            if self.vel.y >= 0 and self.rect.top < brick.rect.top:
                 self.rect.bottom = brick.rect.top + 1
                 self.y = float(self.rect.y)
                 self.is_grounded = True
                 self.vel.y = 0
             if self.vel.y < 0:
-                if brick.tag == 'brick' and self.level > 1:
-                    brick.kill()
-                    print('brick broken')
                 self.rect.top = brick.rect.bottom
                 self.y = float(self.rect.y)
                 self.vel.y = 0
+                if brick.tag == 'brick' and self.level > 1:
+                    brick.kill()
+                    print('brick broken')
         if c.width < c.height:
             if self.rect.right > brick.rect.left > self.rect.left:
                 self.vel.x = 0
                 self.rect.right = brick.rect.left
                 self.x = float(self.rect.x)
-            if self.rect.left < brick.rect.right < self.rect.right:
+            elif self.rect.left < brick.rect.right < self.rect.right:
                 self.vel.x = 0
                 self.rect.left = brick.rect.right
                 self.x = float(self.rect.x)
