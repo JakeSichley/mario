@@ -20,7 +20,7 @@ class Bullet(Sprite):
         self.rect.y = y
         self.x = float(self.rect.x)
 
-    def update(self, sprites):
+    def update(self, platforms, enemies):
         if self.traveled_distance >= self.max_distace:
             self.kill()
         else:
@@ -28,14 +28,16 @@ class Bullet(Sprite):
             self.traveled_distance += self.speed
             self.rect.x = int(self.x)
 
-            # check collision
-            hit = pygame.sprite.spritecollideany(self, sprites)
+            # check collision with enemies
+            hit = pygame.sprite.spritecollideany(self, enemies)
             if hit:
-                if hit.tag == 'brick':
-                    self.kill()
-                if hit.tag == 'enemy':
-                    self.kill()
-                    hit.kill()
+                self.kill()
+                hit.kill()
+
+            # check collision with platforms
+            hit = pygame.sprite.spritecollideany(self, platforms)
+            if hit:
+                self.kill()
 
     def draw(self, camera):
         self.screen.blit(self.anim.imagerect(), camera.apply(self))

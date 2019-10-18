@@ -71,7 +71,7 @@ class Player(Sprite):
 
         self.current_anim = self.idle_anim
 
-    def update(self, sprites):
+    def update(self, platforms, enemies):
         # check falling off:
         if self.rect.y + self.camera.rect.y > self.screen_rect.height:
             self.die()
@@ -83,7 +83,7 @@ class Player(Sprite):
 
         # check collision
         self.is_grounded = False
-        sprites_hit = pygame.sprite.spritecollide(self, sprites, False)
+        sprites_hit = pygame.sprite.spritecollide(self, platforms, False)
         if sprites_hit:
             for s in sprites_hit:
                 if s.tag == 'item':
@@ -95,8 +95,12 @@ class Player(Sprite):
                     s.kill()
                 if s.tag == 'brick':
                     self.collide_brick(s)
-                if s.tag == 'enemy':
-                    self.collide_enemy(s)
+
+        # check collision with enemies
+        enemies_hit = pygame.sprite.spritecollide(self, enemies, False)
+        if enemies_hit:
+            for e in enemies_hit:
+                self.get_hit()
 
         self.move()
         self.y += self.vel.y
@@ -112,7 +116,7 @@ class Player(Sprite):
 
         # update bullets
         for b in self.bullets:
-            b.update(sprites)
+            b.update(platforms, enemies)
 
     def move(self):
         # key inputs

@@ -38,6 +38,6 @@ def update_screen(settings, screen):
     screen.fill(settings.bg_color)
 
 
-def update_player(player, sprites):
-    player.update(sprites)
+def update_player(player, platforms, enemies):
+    player.update(platforms, enemies)
 

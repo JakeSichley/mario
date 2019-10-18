@@ -9,15 +9,18 @@ class StageManager:
         self.stats = stats
         self.screen = screen
         self.sprites = Group()
+        self.enemies = Group()
+        self.platforms = Group()
 
     def update(self, player):
-        for s in self.sprites:
-            if s.tag == 'enemy':
-                s.update(player, self.sprites)
+        for e in self.enemies:
+            e.update(player, self.platforms)
 
     def draw(self, camera):
-        for s in self.sprites:
-            s.draw(camera)
+        for p in self.platforms:
+            p.draw(camera)
+        for e in self.enemies:
+            e.draw(camera)
 
     def load_stage(self, stage):  # character's position in txt file is left bot coordinate
         item_img = pygame.image.load('images/Tile/box.png')
@@ -29,13 +32,13 @@ class StageManager:
                 col = 0
                 for c in l:
                     if c == 'b':  # brick
-                        self.sprites.add(Tile(self.screen, 'brick', block_img, col*16, row*16))
+                        self.platforms.add(Tile(self.screen, 'brick', block_img, col*16, row*16))
                     if c == 'i':  # item
-                        self.sprites.add(Tile(self.screen, 'item', item_img, col*16, row*16))
+                        self.platforms.add(Tile(self.screen, 'item', item_img, col*16, row*16))
                     if c == 'f':  # flower
-                        self.sprites.add(Tile(self.screen, 'flower', flower_img, col*16, row*16))
+                        self.platforms.add(Tile(self.screen, 'flower', flower_img, col*16, row*16))
                     if c == 'g':  # goomba
-                        self.sprites.add(Goomba(self.screen, col*16, row*16))
+                        self.enemies.add(Goomba(self.screen, col*16, row*16))
                     col += 1
                 row += 1
         f.close()

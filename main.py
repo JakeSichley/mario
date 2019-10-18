@@ -32,7 +32,7 @@ def play():
         gf.check_inputs(player=pc)
 
         camera.update(pc)
-        gf.update_player(player=pc, sprites=sm.sprites)
+        gf.update_player(player=pc, platforms=sm.platforms, enemies=sm.enemies)
         sm.update(player=pc)
 
         # draw
