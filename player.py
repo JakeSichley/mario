@@ -28,8 +28,11 @@ class Player(Sprite):
         self.vel = pygame.Vector2()
         self.vel.x, self.vel.y = 0, 0
         self.gravity = 0.3
+        self.max_gravity = 8
+        self.max_water_gravity = 5
         self.speed = 4
         self.jump_power = 9
+        self.swim_power = 5
         self.is_grounded = False
         self.is_sliding = False
         self.is_crouching = False
@@ -152,8 +155,12 @@ class Player(Sprite):
         # gravity
         if not self.is_grounded:
             self.vel.y += self.gravity
-            if self.vel.y >= 8:
-                self.vel.y = 8
+            if self.stats.current_stage == 2:
+                if self.vel.y >= self.max_water_gravity:
+                    self.vel.y = self.max_water_gravity
+            else:
+                if self.vel.y >= self.max_gravity:
+                    self.vel.y = self.max_gravity
         else:
             self.vel.y = 0
 
@@ -315,7 +322,10 @@ class Player(Sprite):
                     self.current_anim = self.fire_throw_anim
 
     def jump(self):
-        self.vel.y = -self.jump_power
+        jump_power = self.jump_power
+        if self.stats.current_stage == 2:
+            jump_power = self.swim_power
+        self.vel.y = -jump_power
         self.y += self.vel.y
         self.rect.y = int(self.y)
 
@@ -324,6 +334,7 @@ class Player(Sprite):
         self.rect.x = self.rect.y = 0
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
+        self.vel.x = self.vel.y = 0
         self.dead = False
 
     def respawn(self):
