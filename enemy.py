@@ -16,6 +16,12 @@ class Enemy(Sprite):
         self.y = float(self.rect.y)
         self.point = point
 
+    def set_pos(self, left, bot):
+        self.rect.x = left
+        self.rect.y = bot
+        self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
+
     def update(self, player, sprites):
         pass
 
@@ -24,12 +30,12 @@ class Enemy(Sprite):
 
 
 class Goomba(Enemy):
-    def __init__(self, screen, x, y):
+    def __init__(self, screen, left, bot):
         self.screen = screen
         self.screen_rect = screen.get_rect()
         self.frames = [pygame.image.load('images/enemy/goomba1.bmp'),
                        pygame.image.load('images/enemy/goomba2.bmp')]
-        super().__init__(screen=screen, frames=self.frames, point=100, left=x, bot=y)
+        super().__init__(screen=screen, frames=self.frames, point=100, left=left, bot=bot)
 
         self.is_grounded = False
         self.chasing_player = False

@@ -7,12 +7,13 @@ from pygame.sprite import Group
 
 
 class Player(Sprite):
-    def __init__(self, screen, settings, stats, camera, hud):
+    def __init__(self, screen, settings, stats, stage_manager, camera, hud):
         super().__init__()
         self.screen = screen
         self.screen_rect = screen.get_rect()
         self.settings = settings
         self.stats = stats
+        self.sm = stage_manager
         self.camera = camera
         self.hud = hud
         self.bullets = Group()
@@ -43,6 +44,7 @@ class Player(Sprite):
 
         # animations
         self.facing_right = True
+        self.die_anim = Timer([pygame.image.load('images/player/die.bmp')])
         # small
         self.walk_anim = Timer([pygame.image.load('images/player/walk1.bmp'),
                                 pygame.image.load('images/player/walk2.bmp'),
@@ -50,6 +52,10 @@ class Player(Sprite):
         self.idle_anim = Timer([self.idle_image])
         self.jump_anim = Timer([pygame.image.load('images/player/jump.bmp')])
         self.slide_anim = Timer([pygame.image.load('images/player/slide.bmp')])
+        self.swim_anim = Timer([pygame.image.load('images/player/swim1.bmp'),
+                                pygame.image.load('images/player/swim2.bmp'),
+                                pygame.image.load('images/player/swim3.bmp'),
+                                pygame.image.load('images/player/swim4.bmp')])
         # big
         self.big_idle_anim = Timer([self.big_idle_image])
         self.big_walk_anim = Timer([pygame.image.load('images/player/big_walk1.bmp'),
@@ -58,6 +64,12 @@ class Player(Sprite):
         self.big_jump_anim = Timer([pygame.image.load('images/player/big_jump.bmp')])
         self.big_slide_anim = Timer([pygame.image.load('images/player/big_slide.bmp')])
         self.big_crouch_anim = Timer([self.big_crouch_image])
+        self.big_swim_anim = Timer([pygame.image.load('images/player/big_swim1.bmp'),
+                                    pygame.image.load('images/player/big_swim2.bmp'),
+                                    pygame.image.load('images/player/big_swim3.bmp'),
+                                    pygame.image.load('images/player/big_swim4.bmp'),
+                                    pygame.image.load('images/player/big_swim5.bmp'),
+                                    pygame.image.load('images/player/big_swim6.bmp')])
         # fire
         self.fire_idle_anim = Timer([pygame.image.load('images/player/fire_idle.bmp')])
         self.fire_walk_anim = Timer([pygame.image.load('images/player/fire_walk1.bmp'),
@@ -68,13 +80,21 @@ class Player(Sprite):
         self.fire_crouch_anim = Timer([pygame.image.load('images/player/fire_crouch.bmp')])
         self.fire_throw_anim = Timer([pygame.image.load('images/player/fire_throw.bmp')],
                                      wait=150, step=0, looponce=True)
-
+        self.fire_swim_anim = Timer([pygame.image.load('images/player/fire_swim1.bmp'),
+                                     pygame.image.load('images/player/fire_swim2.bmp'),
+                                     pygame.image.load('images/player/fire_swim3.bmp'),
+                                     pygame.image.load('images/player/fire_swim4.bmp'),
+                                     pygame.image.load('images/player/fire_swim5.bmp'),
+                                     pygame.image.load('images/player/fire_swim6.bmp')])
         self.current_anim = self.idle_anim
 
     def update(self, platforms, enemies):
         # check falling off:
         if self.rect.y + self.camera.rect.y > self.screen_rect.height:
-            self.die()
+            if not self.dead:
+                self.die()
+            else:
+                self.respawn()
 
         # check invulnerable timer
         if self.invulnerable:
@@ -83,24 +103,28 @@ class Player(Sprite):
 
         # check collision
         self.is_grounded = False
-        sprites_hit = pygame.sprite.spritecollide(self, platforms, False)
-        if sprites_hit:
-            for s in sprites_hit:
-                if s.tag == 'item':
-                    if self.level < 2:
-                        self.level_up(2)
-                    s.kill()
-                if s.tag == 'flower':
-                    self.level_up(3)
-                    s.kill()
-                if s.tag == 'brick':
-                    self.collide_brick(s)
-
-        # check collision with enemies
-        enemies_hit = pygame.sprite.spritecollide(self, enemies, False)
-        if enemies_hit:
-            for e in enemies_hit:
-                self.get_hit()
+        if not self.dead:
+            sprites_hit = pygame.sprite.spritecollide(self, platforms, False)
+            if sprites_hit:
+                for s in sprites_hit:
+                    if s.tag == 'item':
+                        if self.level < 2:
+                            self.level_up(2)
+                        s.kill()
+                    if s.tag == 'flower':
+                        self.level_up(3)
+                        s.kill()
+                    if s.tag == 'brick':
+                        self.collide_brick(s)
+                    if s.tag == 'win':
+                        self.stats.current_stage += 1
+                        self.sm.load_stage(self.stats.current_stage)
+                        self.reset()
+            # check collision with enemies
+            enemies_hit = pygame.sprite.spritecollide(self, enemies, False)
+            if enemies_hit:
+                for e in enemies_hit:
+                    self.get_hit()
 
         self.move()
         self.y += self.vel.y
@@ -133,57 +157,61 @@ class Player(Sprite):
         else:
             self.vel.y = 0
 
-        # crouch
-        if self.level > 1:
-            if self.is_grounded:
-                self.is_crouching = crouch
-            else:
-                self.is_crouching = crouch and self.is_crouching
+        if not self.dead:
+            # crouch
+            if self.level > 1:
+                if self.is_grounded:
+                    self.is_crouching = crouch
+                else:
+                    self.is_crouching = crouch and self.is_crouching
 
-            if self.is_crouching:
-                self.change_rect(self.big_crouch_image.get_rect())
-            else:
-                self.change_rect(self.big_idle_image.get_rect())
+                if self.is_crouching:
+                    self.change_rect(self.big_crouch_image.get_rect())
+                else:
+                    self.change_rect(self.big_idle_image.get_rect())
+            # move
+            if not self.is_crouching:
+                if left:  # move left
+                    if self.vel.x > 0:
+                        self.is_sliding = True
+                    else:
+                        self.is_sliding = False
 
-        # move
-        if not self.is_crouching:
-            if left:  # move left
+                    if self.facing_right:
+                        self.facing_right = not self.facing_right
+                    if not self.camera.out_of_camera(self):
+                        self.vel.x -= 0.1
+                        if self.vel.x <= -self.speed:
+                            self.vel.x = -self.speed
+                    else:
+                        self.vel.x = 0
+                if right:  # move right
+                    if self.vel.x < 0:
+                        self.is_sliding = True
+                    else:
+                        self.is_sliding = False
+
+                    if not self.facing_right:
+                        self.facing_right = not self.facing_right
+                    self.vel.x += 0.1
+                    if self.vel.x >= self.speed:
+                        self.vel.x = self.speed
+            if not (left or right) or self.is_crouching:
+                self.is_sliding = False
                 if self.vel.x > 0:
-                    self.is_sliding = True
-                else:
-                    self.is_sliding = False
-
-                if self.facing_right:
-                    self.facing_right = False
-                if not self.camera.out_of_camera(self):
                     self.vel.x -= 0.1
-                    if self.vel.x <= -self.speed:
-                        self.vel.x = -self.speed
-                else:
-                    self.vel.x = 0
-            if right:  # move right
-                if self.vel.x < 0:
-                    self.is_sliding = True
-                else:
-                    self.is_sliding = False
-
-                if not self.facing_right:
-                    self.facing_right = True
-                self.vel.x += 0.1
-                if self.vel.x >= self.speed:
-                    self.vel.x = self.speed
-        if not (left or right) or self.is_crouching:
-            self.is_sliding = False
-            if self.vel.x > 0:
-                self.vel.x -= 0.1
-                if self.vel.x <= 0:
-                    self.vel.x = 0
-            elif self.vel.x < 0:
-                self.vel.x += 0.1
-                if self.vel.x >= 0:
-                    self.vel.x = 0
+                    if self.vel.x <= 0:
+                        self.vel.x = 0
+                elif self.vel.x < 0:
+                    self.vel.x += 0.1
+                    if self.vel.x >= 0:
+                        self.vel.x = 0
 
     def update_animation(self):
+        if self.dead:
+            self.current_anim = self.die_anim
+            return
+
         if self.is_firing:
             if self.current_anim.finished:
                 self.is_firing = False
@@ -198,11 +226,20 @@ class Player(Sprite):
         else:
             if self.vel.y != 0:  # jump/fall animation
                 if self.level == 1:
-                    self.current_anim = self.jump_anim
+                    if self.stats.current_stage == 2:
+                        self.current_anim = self.swim_anim
+                    else:
+                        self.current_anim = self.jump_anim
                 elif self.level == 2:
-                    self.current_anim = self.big_jump_anim
+                    if self.stats.current_stage == 2:
+                        self.current_anim = self.big_swim_anim
+                    else:
+                        self.current_anim = self.big_jump_anim
                 else:
-                    self.current_anim = self.fire_jump_anim
+                    if self.stats.current_stage == 2:
+                        self.current_anim = self.fire_swim_anim
+                    else:
+                        self.current_anim = self.fire_jump_anim
             else:
                 if self.is_sliding:  # slide animation
                     if self.level == 1:
@@ -252,10 +289,14 @@ class Player(Sprite):
                 self.die()
 
     def die(self):
-        #if self.stats.lives_left >= 0:
-        self.stats.lives_left -= 1
-        self.hud.prep_lives()
-        self.respawn()
+        self.dead = True
+        self.invulnerable = False
+        self.bullets.empty()
+        self.vel.x = 0
+        self.vel.y = -12
+        self.is_grounded = False
+        self.y += self.vel.y
+        self.rect.y = int(self.y)
 
     def fire(self):
         if self.level == 3:
@@ -278,14 +319,23 @@ class Player(Sprite):
         self.y += self.vel.y
         self.rect.y = int(self.y)
 
-    def respawn(self):
-        self.level = 1
-        self.change_rect(self.idle_image.get_rect())
+    def reset(self):
         self.camera.reset()
         self.rect.x = self.rect.y = 0
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
         self.dead = False
+
+    def respawn(self):
+        if self.stats.lives_left > 0:
+            self.stats.lives_left -= 1
+            self.level = 1
+            self.change_rect(self.idle_image.get_rect())
+            self.hud.prep_lives()
+            self.reset()
+            self.sm.reset()
+        #else:
+            #gameover
 
     def collide_brick(self, brick):
         c = self.rect.clip(brick.rect)  # collision rect

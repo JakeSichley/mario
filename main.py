@@ -21,9 +21,9 @@ def play():
     stats = GameStats()
     main_clock = pygame.time.Clock()
     camera = Camera(settings=settings)
-    hud = HUD(screen=screen, settings=settings, stats=stats)
-    pc = Player(screen=screen, settings=settings, stats=stats, camera=camera, hud=hud)
     sm = StageManager(screen=screen, stats=stats)
+    hud = HUD(screen=screen, settings=settings, stats=stats, stage_manager=sm)
+    pc = Player(screen=screen, settings=settings, stats=stats, stage_manager=sm, camera=camera, hud=hud)
     sm.load_stage(stage=stats.current_stage)
 
     # Main loop
