@@ -21,6 +21,7 @@ class Player(Sprite):
         self.big_idle_image = pygame.image.load('images/player/big_idle.bmp')
         self.big_crouch_image = pygame.image.load('images/player/big_crouch.bmp')
         self.rect = self.idle_image.get_rect()
+        self.rect.x, self.rect.y = 17, 0
         self.y = float(self.rect.y)
         self.x = float(self.rect.x)
 
@@ -41,6 +42,9 @@ class Player(Sprite):
         # player's states variables
         self.level = 1  # 1 = small, 2 = big, 3 = fire
         self.dead = False
+        self.invincible = False
+        self.invin_time = 15000
+        self.invin_timer = self.invin_time
         self.invulnerable = False
         self.invuln_time = 1500
         self.invuln_timer = self.invuln_time
@@ -121,13 +125,13 @@ class Player(Sprite):
                         self.collide_brick(s)
                     if s.tag == 'win':
                         self.stats.current_stage += 1
-                        self.sm.load_stage(self.stats.current_stage)
+                        self.sm.load_stage(self.stats.current_stage, self.hud)
                         self.reset()
             # check collision with enemies
             enemies_hit = pygame.sprite.spritecollide(self, enemies, False)
             if enemies_hit:
                 for e in enemies_hit:
-                    self.get_hit()
+                    self.collide_enemy(e)
 
         self.move()
         self.y += self.vel.y
@@ -330,21 +334,22 @@ class Player(Sprite):
         self.rect.y = int(self.y)
 
     def reset(self):
+        self.dead = self.is_grounded = self.invulnerable = self.invincible = False
         self.camera.reset()
-        self.rect.x = self.rect.y = 0
+        self.rect.x = 17
+        self.rect.y = 0
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
         self.vel.x = self.vel.y = 0
-        self.dead = False
 
     def respawn(self):
-        if self.stats.lives_left > 0:
+        #if self.stats.lives_left > 0:
             self.stats.lives_left -= 1
             self.level = 1
             self.change_rect(self.idle_image.get_rect())
             self.hud.prep_lives()
             self.reset()
-            self.sm.reset()
+            self.sm.reset(self.hud)
         #else:
             #gameover
 
@@ -374,6 +379,12 @@ class Player(Sprite):
                 self.x = float(self.rect.x)
 
     def collide_enemy(self, enemy):
+        c = self.rect.clip(enemy.rect)  # collision rect
+        if c.width > c.height and self.vel.y > 0:
+            self.jump()
+            enemy.die()
+            return
+
         self.get_hit()
 
     def draw1(self):

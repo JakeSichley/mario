@@ -22,6 +22,9 @@ class Enemy(Sprite):
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
+    def die(self):
+        self.kill()
+
     def update(self, player, sprites):
         pass
 

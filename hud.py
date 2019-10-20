@@ -23,7 +23,7 @@ class HUD:
         self.stage_text = self.font.render('Stage: ' + str(self.stats.current_stage), True, self.text_color,
                                            self.settings.bg_color)
         self.stage_rect = self.stage_text.get_rect()
-        self.stage_rect.left = int(self.screen_rect.width * 0.88)
+        self.stage_rect.left = int(self.screen_rect.width * 0.84)
         self.stage_rect.bottom = self.score_rect.bottom
 
         # coins
@@ -60,7 +60,7 @@ class HUD:
         self.stage_text = self.font.render('STAGE: ' + str(self.stats.current_stage), True, self.text_color,
                                            self.settings.bg_color)
         self.stage_rect = self.stage_text.get_rect()
-        self.stage_rect.left = int(self.screen_rect.width * 0.88)
+        self.stage_rect.left = int(self.screen_rect.width * 0.84)
         self.stage_rect.bottom = self.score_rect.bottom
 
     def prep_lives(self):

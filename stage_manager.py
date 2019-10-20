@@ -30,9 +30,10 @@ class StageManager:
         for e in self.enemies:
             e.draw(camera)
 
-    def load_stage(self, stage):  # character's position in txt file is left bot coordinate
+    def load_stage(self, stage, hud):  # character's position in txt file is left bot coordinate
         self.enemies.empty()
         self.platforms.empty()
+        hud.prep_stage()
         self.time_start = pygame.time.get_ticks()
         if stage == 1:
             # set up tile set
@@ -46,7 +47,13 @@ class StageManager:
                          'i': ['item', pygame.image.load('images/Tile/box.png')],
                          'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
                          'w': ['win', pygame.image.load('images/Tile/flag.png')]}
-            self.load('stage/stage2.txt', tile_dict)  # build map form txt file
+            self.load('stage/stage2.txt', tile_dict)
+        if stage == 3:
+            tile_dict = {'b': ['brick', pygame.image.load('images/Tile/brick.png')],
+                         'i': ['item', pygame.image.load('images/Tile/box.png')],
+                         'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
+                         'w': ['win', pygame.image.load('images/Tile/flag.png')]}
+            self.load('stage/stage3.txt', tile_dict)
 
     def load(self, fname, tile_dict):
         with open(fname, 'r') as f:
@@ -62,5 +69,5 @@ class StageManager:
                 row += 1
         f.close()
 
-    def reset(self):
-        self.load_stage(self.stats.current_stage)
+    def reset(self, hud):
+        self.load_stage(self.stats.current_stage, hud)
