@@ -1,4 +1,4 @@
-         a
+sprites: http://www.angelfire.com/in3/smbsupersite/sprite_sheet.htm
+	 http://www.mariouniverse.com/wp-content/img/sprites/nes/smb/misc-8.png
 
-mario sprites: http://www.angelfire.com/in3/smbsupersite/sprite_sheet.htm
-	       http://www.mariouniverse.com/wp-content/img/sprites/nes/smb/misc-8.png
+audio: https://downloads.khinsider.com/game-soundtracks/album/super-mario-bros
