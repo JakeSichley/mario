@@ -4,6 +4,7 @@ from pygame.locals import *
 from timer import Timer
 from bullet import Bullet
 from pygame.sprite import Group
+from sound_clip import SoundClip
 
 
 class Player(Sprite):
@@ -30,10 +31,10 @@ class Player(Sprite):
         self.vel.x, self.vel.y = 0, 0
         self.gravity = 0.3
         self.max_gravity = 8
-        self.max_water_gravity = 5
+        self.max_water_gravity = 4.5
         self.speed = 4
-        self.jump_power = 9
-        self.swim_power = 5
+        self.jump_power = 8
+        self.swim_power = 4.5
         self.is_grounded = False
         self.is_sliding = False
         self.is_crouching = False
@@ -41,6 +42,7 @@ class Player(Sprite):
 
         # player's states variables
         self.level = 1  # 1 = small, 2 = big, 3 = fire
+        self.stage_clear = False
         self.dead = False
         self.invincible = False
         self.invin_time = 15000
@@ -95,13 +97,36 @@ class Player(Sprite):
                                      pygame.image.load('images/player/fire_swim6.bmp')])
         self.current_anim = self.idle_anim
 
+        # sounds
+        self.jump_sound = pygame.mixer.Sound('audio/jump.wav')
+        self.big_jump_sound = pygame.mixer.Sound('audio/big_jump.wav')
+        self.live_up_sound = pygame.mixer.Sound('audio/1-up.wav')
+        self.die_sound = SoundClip('audio/die.wav')
+        self.stage_clear_sound = SoundClip('audio/stage_clear.wav')
+        self.stomp_sound = pygame.mixer.Sound('audio/stomp.wav')
+        self.level_up_sound = pygame.mixer.Sound('audio/powerup.wav')
+        self.fire_sound = pygame.mixer.Sound('audio/fire.wav')
+        self.break_brick_sound = pygame.mixer.Sound('audio/breakbrick.wav')
+        self.gameover_sound = pygame.mixer.Sound('audio/gameover.wav')
+
     def update(self, platforms, enemies):
+        # check stage clear:
+        if self.stage_clear:
+            if self.stage_clear_sound.is_finished():
+                self.stats.current_stage += 1
+                self.sm.load_stage(self.stats.current_stage, self.hud)
+                self.reset()
+            else:
+                self.vel.x = self.vel.y = 0
+                return
+
         # check falling off:
         if self.rect.y + self.camera.rect.y > self.screen_rect.height:
             if not self.dead:
                 self.die()
             else:
-                self.respawn()
+                if self.die_sound.is_finished():
+                    self.respawn()
 
         # check invulnerable timer
         if self.invulnerable:
@@ -119,14 +144,19 @@ class Player(Sprite):
                             self.level_up(2)
                         s.kill()
                     if s.tag == 'flower':
-                        self.level_up(3)
+                        if self.level < 3:
+                            self.level_up(3)
                         s.kill()
                     if s.tag == 'brick':
                         self.collide_brick(s)
                     if s.tag == 'win':
-                        self.stats.current_stage += 1
-                        self.sm.load_stage(self.stats.current_stage, self.hud)
-                        self.reset()
+                        pygame.mixer.stop()
+                        self.stage_clear_sound.play()
+                        self.stage_clear = True
+                        score = int(abs(s.rect.bottom - self.rect.bottom) * 10 +
+                                    ((self.sm.time_limit - self.sm.time_elapsed)//1000) * 10)
+                        self.stats.score += score
+                        self.hud.prep_score()
             # check collision with enemies
             enemies_hit = pygame.sprite.spritecollide(self, enemies, False)
             if enemies_hit:
@@ -143,11 +173,9 @@ class Player(Sprite):
         self.rect.y = int(self.y)
         self.rect.x = int(self.x)
 
-        self.update_animation()
-
         # update bullets
         for b in self.bullets:
-            b.update(platforms, enemies)
+            b.update(self, platforms, enemies)
 
     def move(self):
         # key inputs
@@ -277,6 +305,7 @@ class Player(Sprite):
 
     def level_up(self, new_level):
         self.level = new_level
+        self.level_up_sound.play()
         if self.level == 2:
             self.change_rect(self.big_idle_image.get_rect())
         if self.level >= 3:
@@ -300,6 +329,8 @@ class Player(Sprite):
                 self.die()
 
     def die(self):
+        pygame.mixer.stop()
+        self.die_sound.play()
         self.dead = True
         self.invulnerable = False
         self.bullets.empty()
@@ -312,6 +343,7 @@ class Player(Sprite):
     def fire(self):
         if self.level == 3:
             if len(self.bullets) < self.settings.bullet_limit:
+                self.fire_sound.play()
                 if self.facing_right:
                     d = 1
                     x = self.rect.right
@@ -326,15 +358,20 @@ class Player(Sprite):
                     self.current_anim = self.fire_throw_anim
 
     def jump(self):
+        if self.stage_clear:
+            return
+
         jump_power = self.jump_power
-        if self.stats.current_stage == 2:
+        if self.stats.current_stage == 2:  # swim stage
             jump_power = self.swim_power
+        else:
+            self.jump_sound.play()
         self.vel.y = -jump_power
         self.y += self.vel.y
         self.rect.y = int(self.y)
 
     def reset(self):
-        self.dead = self.is_grounded = self.invulnerable = self.invincible = False
+        self.dead = self.is_grounded = self.invulnerable = self.invincible = self.stage_clear = False
         self.camera.reset()
         self.rect.x = 17
         self.rect.y = 0
@@ -343,15 +380,16 @@ class Player(Sprite):
         self.vel.x = self.vel.y = 0
 
     def respawn(self):
-        #if self.stats.lives_left > 0:
+        if self.stats.lives_left > 0:
             self.stats.lives_left -= 1
             self.level = 1
             self.change_rect(self.idle_image.get_rect())
             self.hud.prep_lives()
             self.reset()
             self.sm.reset(self.hud)
-        #else:
-            #gameover
+        else:
+            self.stats.current_stage = -1
+            self.gameover_sound.play()
 
     def collide_brick(self, brick):
         c = self.rect.clip(brick.rect)  # collision rect
@@ -367,27 +405,33 @@ class Player(Sprite):
                 self.vel.y = 0
                 if brick.tag == 'brick' and self.level > 1:
                     brick.kill()
-                    print('brick broken')
+                    self.break_brick_sound.play()
         if c.width < c.height:
             if self.rect.right > brick.rect.left > self.rect.left:
-                self.vel.x = 0
+                self.vel.x = -1
                 self.rect.right = brick.rect.left
                 self.x = float(self.rect.x)
             elif self.rect.left < brick.rect.right < self.rect.right:
-                self.vel.x = 0
+                self.vel.x = 1
                 self.rect.left = brick.rect.right
                 self.x = float(self.rect.x)
 
     def collide_enemy(self, enemy):
         c = self.rect.clip(enemy.rect)  # collision rect
         if c.width > c.height and self.vel.y > 0:
-            self.jump()
+            self.stomp_sound.play()
+            self.stats.score += enemy.point
+            self.hud.prep_score()
+            self.vel.y = -6
+            self.y += self.vel.y
+            self.rect.y = int(self.y)
             enemy.die()
             return
 
         self.get_hit()
 
     def draw1(self):
+        self.update_animation()
         if self.facing_right:
             image = self.current_anim.imagerect()
         else:
@@ -399,4 +443,5 @@ class Player(Sprite):
             b.draw(self.camera)
 
     def draw(self):
+        self.update_animation()
         self.screen.blit(self.current_anim.imagerect(), self.rect)

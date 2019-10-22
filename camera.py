@@ -13,7 +13,8 @@ class Camera:
     def update(self, target):
 
         if target.rect.x + self.rect.x >= int(self.settings.scr_width/2.5):
-            self.x += -target.vel.x
+            if target.vel.x >= 0:
+                self.x += -target.vel.x
         # elif self.rect.x + target.rect.x < 100:
         #    self.x += 4
 

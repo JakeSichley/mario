@@ -1,14 +1,13 @@
-import pygame
 from settings import Settings
 import game_functions as gf
 from player import Player
 from camera import Camera
 from hud import HUD
 from game_stats import GameStats
-from pygame.sprite import Group
-from tile import *
 from enemy import *
 from stage_manager import StageManager
+from credits import CreditsScreen
+from gameover import GameoverScreen
 
 FPS = 60
 
@@ -20,29 +19,38 @@ def play():
     pygame.display.set_caption("Mario")
     stats = GameStats()
     main_clock = pygame.time.Clock()
+    cs = CreditsScreen(screen=screen)
+    go = GameoverScreen(screen=screen)
     camera = Camera(settings=settings)
-    sm = StageManager(screen=screen, stats=stats)
+    sm = StageManager(screen=screen, settings=settings, stats=stats)
     hud = HUD(screen=screen, settings=settings, stats=stats, stage_manager=sm)
     pc = Player(screen=screen, settings=settings, stats=stats, stage_manager=sm, camera=camera, hud=hud)
     sm.load_stage(stage=stats.current_stage, hud=hud)
+    pygame.mouse.set_visible(False)
 
     # Main loop
-    game_over = False
-    while not game_over:
+    while True:
         gf.check_inputs(player=pc)
 
-        camera.update(pc)
-        gf.update_player(player=pc, platforms=sm.platforms, enemies=sm.enemies)
-        sm.update(player=pc)
+        if stats.current_stage < 4 and stats.current_stage != -1:
+            camera.update(pc)
+        if stats.current_stage != -1:
+            gf.update_player(player=pc, platforms=sm.platforms, enemies=sm.enemies)
+            sm.update(player=pc)
 
         # draw
-        gf.update_screen(settings=settings, screen=screen)
-        pc.draw1()
-        sm.draw(camera)
+        if stats.current_stage != -1:
+            screen.fill(settings.bg_color)
+            pc.draw1()
+            sm.draw(camera)
 
-        hud.draw()
+        if stats.current_stage < 4 and stats.current_stage != -1:
+            hud.draw()
+        elif stats.current_stage == 4:
+            cs.draw()
+        elif stats.current_stage == -1:
+            go.draw()
         pygame.display.update()
-
         main_clock.tick(60)
 
 

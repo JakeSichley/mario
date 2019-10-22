@@ -1,4 +1,3 @@
-import pygame
 from pygame.font import Font
 
 
@@ -47,7 +46,12 @@ class HUD:
         self.lives_rect.left = self.score_rect.left
         self.lives_rect.top = self.score_rect.bottom + 5
 
-        # time
+    def prep_coins(self):
+        self.coins_text = self.font.render('Coin: ' + str(self.stats.coins), True, self.text_color,
+                                           self.settings.bg_color)
+        self.coins_rect = self.coins_text.get_rect()
+        self.coins_rect.left = int(self.screen_rect.width * 0.3)
+        self.coins_rect.bottom = self.score_rect.bottom
 
     def prep_score(self):
         self.score_text = self.font.render('Score:' + str(int(self.stats.score)), True, self.text_color,
@@ -71,11 +75,21 @@ class HUD:
         self.lives_rect.top = self.score_rect.bottom + 5
 
     def prep_time(self):
-        self.time_text = self.font.render('Time: ' + str((self.sm.time_limit - self.sm.time_elapsed)//1000),
+        time = self.sm.time_limit - self.sm.time_elapsed
+        if time < 0:
+            time = 0
+        self.time_text = self.font.render('Time: ' + str(time//1000),
                                           True, self.text_color, self.settings.bg_color)
         self.time_rect = self.time_text.get_rect()
         self.time_rect.bottom = self.score_rect.bottom
         self.time_rect.left = int(self.screen_rect.width * 0.55)
+
+    def refresh(self):
+        self.prep_lives()
+        self.prep_score()
+        self.prep_time()
+        self.prep_stage()
+        self.prep_coins()
 
     def draw(self):
         self.screen.blit(self.score_text, self.score_rect)

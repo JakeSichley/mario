@@ -20,7 +20,7 @@ class Bullet(Sprite):
         self.rect.y = y
         self.x = float(self.rect.x)
 
-    def update(self, platforms, enemies):
+    def update(self, player, platforms, enemies):
         if self.traveled_distance >= self.max_distace:
             self.kill()
         else:
@@ -31,6 +31,8 @@ class Bullet(Sprite):
             # check collision with enemies
             hit = pygame.sprite.spritecollideany(self, enemies)
             if hit:
+                player.stats.score += hit.point
+                player.hud.prep_score()
                 self.kill()
                 hit.kill()
 
