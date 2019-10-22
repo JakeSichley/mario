@@ -7,6 +7,13 @@ from pygame.sprite import Group
 from sound_clip import SoundClip
 
 
+def tint(image, tint_color):
+    image = image.copy()
+    image.fill((0, 0, 0, 255), None, BLEND_RGB_MULT)
+    image.fill(tint_color[0:3] + (0,), None, BLEND_RGBA_ADD)
+    return image
+
+
 class Player(Sprite):
     def __init__(self, screen, settings, stats, stage_manager, camera, hud):
         super().__init__()
@@ -45,11 +52,11 @@ class Player(Sprite):
         self.stage_clear = False
         self.dead = False
         self.invincible = False
-        self.invin_time = 15000
-        self.invin_timer = self.invin_time
+        self.invin_time = 10000
+        self.invin_start_time = 0
         self.invulnerable = False
         self.invuln_time = 1500
-        self.invuln_timer = self.invuln_time
+        self.invuln_start_time = 0
 
         # animations
         self.facing_right = True
@@ -108,6 +115,7 @@ class Player(Sprite):
         self.fire_sound = pygame.mixer.Sound('audio/fire.wav')
         self.break_brick_sound = pygame.mixer.Sound('audio/breakbrick.wav')
         self.gameover_sound = pygame.mixer.Sound('audio/gameover.wav')
+        self.invincible_sound = pygame.mixer.Sound('audio/invincibility.ogg')
 
     def update(self, platforms, enemies):
         # check stage clear:
@@ -128,9 +136,16 @@ class Player(Sprite):
                 if self.die_sound.is_finished():
                     self.respawn()
 
+        # check invincible timer
+        if self.invincible:
+            if pygame.time.get_ticks() - self.invin_start_time > self.invin_time:
+                self.invincible_sound.stop()
+                self.sm.bgm.play(-1)
+                self.invincible = False
+
         # check invulnerable timer
         if self.invulnerable:
-            if pygame.time.get_ticks() - self.invuln_timer > self.invuln_time:
+            if pygame.time.get_ticks() - self.invuln_start_time > self.invuln_time:
                 self.invulnerable = False
 
         # check collision
@@ -146,6 +161,13 @@ class Player(Sprite):
                     if s.tag == 'flower':
                         if self.level < 3:
                             self.level_up(3)
+                        s.kill()
+                    if s.tag == 'star':
+                        if not self.invincible:
+                            self.sm.bgm.stop()
+                            self.invincible_sound.play(-1)
+                        self.invincible = True
+                        self.invin_start_time = pygame.time.get_ticks()
                         s.kill()
                     if s.tag == 'brick':
                         self.collide_brick(s)
@@ -324,7 +346,7 @@ class Player(Sprite):
                 self.level = 1
                 self.change_rect(self.idle_image.get_rect())
                 self.invulnerable = True
-                self.invuln_timer = pygame.time.get_ticks()
+                self.invuln_start_time = pygame.time.get_ticks()
             else:
                 self.die()
 
@@ -417,6 +439,12 @@ class Player(Sprite):
                 self.x = float(self.rect.x)
 
     def collide_enemy(self, enemy):
+        if self.invincible:
+            self.stats.score += enemy.point
+            self.hud.prep_score()
+            enemy.die()
+            return
+
         c = self.rect.clip(enemy.rect)  # collision rect
         if c.width > c.height and self.vel.y > 0:
             self.stomp_sound.play()
@@ -436,6 +464,11 @@ class Player(Sprite):
             image = self.current_anim.imagerect()
         else:
             image = pygame.transform.flip(self.current_anim.imagerect(), True, False)
+        # invincible
+        if self.invincible:
+            if (pygame.time.get_ticks()//100) % 2 == 0:
+                image = tint(image,  (245, 176, 65))
+
         self.screen.blit(image, self.camera.apply(self))
 
         # draw bullets

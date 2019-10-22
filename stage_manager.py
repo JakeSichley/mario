@@ -51,6 +51,7 @@ class StageManager:
             tile_dict = {'b': ['brick', pygame.image.load('images/Tile/brick.png')],
                          'i': ['item', pygame.image.load('images/Tile/box.png')],
                          'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
+                         's': ['star', pygame.image.load('images/Tile/star.png')],
                          'w': ['win', pygame.image.load('images/Tile/flag.png')]}
             self.load('stage/stage1.txt', tile_dict)  # build map form txt file
         if stage == 2:
