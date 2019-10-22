@@ -458,22 +458,27 @@ class Player(Sprite):
 
         self.get_hit()
 
-    def draw1(self):
+    def draw1(self):  # draw with camera
         self.update_animation()
-        if self.facing_right:
-            image = self.current_anim.imagerect()
-        else:
-            image = pygame.transform.flip(self.current_anim.imagerect(), True, False)
-        # invincible
-        if self.invincible:
-            if (pygame.time.get_ticks()//100) % 2 == 0:
-                image = tint(image,  (245, 176, 65))
-
-        self.screen.blit(image, self.camera.apply(self))
 
         # draw bullets
         for b in self.bullets:
             b.draw(self.camera)
+
+        # draw player
+        if self.facing_right:
+            image = self.current_anim.imagerect()
+        else:
+            image = pygame.transform.flip(self.current_anim.imagerect(), True, False)
+
+        if self.invincible:  # invincible
+            if (pygame.time.get_ticks()//100) % 2 == 0:
+                image = tint(image,  (245, 176, 65))
+
+        if self.invulnerable:  # invulnerable
+            if (pygame.time.get_ticks() // 100) % 2 == 0:
+                return
+        self.screen.blit(image, self.camera.apply(self))
 
     def draw(self):
         self.update_animation()
