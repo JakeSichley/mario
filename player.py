@@ -430,11 +430,11 @@ class Player(Sprite):
                     self.break_brick_sound.play()
         if c.width < c.height:
             if self.rect.right > brick.rect.left > self.rect.left:
-                self.vel.x = -1
+                self.vel.x = 0
                 self.rect.right = brick.rect.left
                 self.x = float(self.rect.x)
             elif self.rect.left < brick.rect.right < self.rect.right:
-                self.vel.x = 1
+                self.vel.x = 0
                 self.rect.left = brick.rect.right
                 self.x = float(self.rect.x)
 
