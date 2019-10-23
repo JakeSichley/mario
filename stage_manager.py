@@ -50,6 +50,15 @@ class StageManager:
             # set up tile set
             tile_dict = {'b': ['brick', pygame.image.load('images/Tile/brick.png')],
                          'g': ['ground', pygame.image.load('images/Tile/ground.png')],
+                         'p': ['pipe', pygame.image.load('images/Tile/pipe.png')],
+                         'P': ['pipe', pygame.image.load('images/Tile/pipe_end.png')],
+                         '1': ['cloud_start', pygame.image.load('images/Tile/cloud_start.png')],
+                         '2': ['cloud', pygame.image.load('images/Tile/cloud.png')],
+                         '3': ['cloud_end', pygame.image.load('images/Tile/cloud_end.png')],
+                         '6': ['bush_start', pygame.image.load('images/Tile/bush_start.png')],
+                         '7': ['bush', pygame.image.load('images/Tile/bush.png')],
+                         '8': ['bush_end', pygame.image.load('images/Tile/bush_end.png')],
+                         'M': ['mountain', pygame.image.load('images/Tile/mountain.png')],
                          'm': ['mountain', pygame.image.load('images/Tile/mountain.png')],
                          'i': ['item', pygame.image.load('images/Tile/box.png')],
                          'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
@@ -92,7 +101,12 @@ class StageManager:
                 col = 0
                 for c in l:
                     if c in tile_dict:
-                        self.platforms.add(Tile(self.screen, tile_dict[c][0], tile_dict[c][1], col * 16, row * 16))
+                        # small mountain needs offset
+                        if c == 'm':
+                            self.platforms.add(Tile(
+                                self.screen, tile_dict[c][0], tile_dict[c][1], col * 16 - 16, row * 16 + 16))
+                        else:
+                            self.platforms.add(Tile(self.screen, tile_dict[c][0], tile_dict[c][1], col * 16, row * 16))
                     if c == 'G':  # goomba
                         self.enemies.add(Goomba(self.screen, col * 16, row * 16))
                     col += 1
