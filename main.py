@@ -41,8 +41,8 @@ def play():
         # draw
         if stats.current_stage != -1:
             screen.fill(settings.bg_color)
-            pc.draw1()
             sm.draw(camera)
+            pc.draw1()
 
         if stats.current_stage < 4 and stats.current_stage != -1:
             hud.draw()

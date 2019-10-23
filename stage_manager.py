@@ -40,7 +40,7 @@ class StageManager:
         self.time_elapsed = 0
         # set up bg_color
         if stage in [1, 3]:
-            self.settings.bg_color = (150, 150, 250)
+            self.settings.bg_color = (90, 148, 252)
         if stage in [2]:
             self.settings.bg_color = (100, 100, 255)
         if stage in [-1, 4]:
@@ -49,6 +49,8 @@ class StageManager:
         if stage == 1:
             # set up tile set
             tile_dict = {'b': ['brick', pygame.image.load('images/Tile/brick.png')],
+                         'g': ['ground', pygame.image.load('images/Tile/ground.png')],
+                         'm': ['mountain', pygame.image.load('images/Tile/mountain.png')],
                          'i': ['item', pygame.image.load('images/Tile/box.png')],
                          'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
                          's': ['star', pygame.image.load('images/Tile/star.png')],
@@ -91,7 +93,7 @@ class StageManager:
                 for c in l:
                     if c in tile_dict:
                         self.platforms.add(Tile(self.screen, tile_dict[c][0], tile_dict[c][1], col * 16, row * 16))
-                    if c == 'g':  # goomba
+                    if c == 'G':  # goomba
                         self.enemies.add(Goomba(self.screen, col * 16, row * 16))
                     col += 1
                 row += 1

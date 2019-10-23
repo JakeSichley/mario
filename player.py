@@ -171,6 +171,8 @@ class Player(Sprite):
                         s.kill()
                     if s.tag == 'brick':
                         self.collide_brick(s)
+                    if s.tag == 'ground':
+                        self.collide_ground(s)
                     if s.tag == 'win':
                         pygame.mixer.stop()
                         self.stage_clear_sound.play()
@@ -437,6 +439,15 @@ class Player(Sprite):
                 self.vel.x = 0
                 self.rect.left = brick.rect.right
                 self.x = float(self.rect.x)
+
+    def collide_ground(self, ground):
+        c = self.rect.clip(ground.rect)
+        if c.width >= c.height:
+            if self.vel.y >= 0 and self.rect.top < ground.rect.top:
+                self.rect.bottom = ground.rect.top + 1
+                self.y = float(self.rect.y)
+                self.is_grounded = True
+                self.vel.y = 0
 
     def collide_enemy(self, enemy):
         if self.invincible:
