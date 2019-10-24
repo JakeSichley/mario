@@ -103,14 +103,9 @@ class StageManager:
                 col = 0
                 for c in l:
                     if c in tile_dict:
-                        # small mountain needs offset
-                        if c == 'm':
-                            self.platforms.add(Tile(
-                                self.screen, tile_dict[c][0], tile_dict[c][1], col * 16 - 16, row * 16 + 16))
-                        else:
-                            self.platforms.add(Tile(self.screen, tile_dict[c][0], tile_dict[c][1], col * 16, row * 16))
+                        self.platforms.add(Tile(self.screen, tile_dict[c][0], tile_dict[c][1], col * 16, row * 16))
                     if c == 'G':  # goomba
-                        self.enemies.add(Goomba(self.screen, col * 16, row * 16))
+                        self.enemies.add(Goomba(self.screen, self.settings, col * 16, row * 16))
                     col += 1
                 row += 1
         f.close()

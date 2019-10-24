@@ -1,13 +1,15 @@
 import pygame
 from pygame.sprite import Sprite
 from timer import Timer
+from pygame.font import Font
 
 
 class Enemy(Sprite):
-    def __init__(self, screen, frames, point, left, bot):
+    def __init__(self, screen, settings, frames, point, left, bot):
         super().__init__()
         self.tag = 'enemy'
         self.screen = screen
+        self.settings = settings
         self.anim = Timer(frames)
         self.rect = frames[0].get_rect()
         self.rect.x = left
@@ -15,6 +17,13 @@ class Enemy(Sprite):
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
         self.point = point
+        self.dead = False
+        self.font = Font(None, 16)
+        self.point_text = self.font.render(str(self.point), True, (255, 255, 255), self.settings.bg_color)
+        self.point_rect = self.point_text.get_rect()
+        self.point_rect.center = self.rect.center
+        self.point_time = 1000
+        self.point_start_time = 0
 
     def set_pos(self, left, bot):
         self.rect.x = left
@@ -23,22 +32,29 @@ class Enemy(Sprite):
         self.y = float(self.rect.y)
 
     def die(self):
-        self.kill()
+        self.dead = True
+        self.point_start_time = pygame.time.get_ticks()
 
     def update(self, player, sprites):
-        pass
+        if self.dead:
+            if pygame.time.get_ticks() - self.point_start_time >= self.point_time:
+                self.kill()
 
     def draw(self, camera):
-        self.screen.blit(self.anim.imagerect(), camera.apply(self))
+        if self.dead:
+            image = self.point_text
+        else:
+            image = self.anim.imagerect()
+        self.screen.blit(image, camera.apply(self))
 
 
 class Goomba(Enemy):
-    def __init__(self, screen, left, bot):
+    def __init__(self, screen, settings, left, bot):
         self.screen = screen
         self.screen_rect = screen.get_rect()
         self.frames = [pygame.image.load('images/enemy/goomba1.bmp'),
                        pygame.image.load('images/enemy/goomba2.bmp')]
-        super().__init__(screen=screen, frames=self.frames, point=100, left=left, bot=bot)
+        super().__init__(screen=screen, settings=settings, frames=self.frames, point=100, left=left, bot=bot)
 
         self.is_grounded = False
         self.chasing_player = False
@@ -47,6 +63,8 @@ class Goomba(Enemy):
         self.vely = 0
 
     def update(self, player, sprites):
+        super().update(player, sprites)
+
         # check falling off
         if self.rect.y > self.screen_rect.height:
             self.kill()
@@ -71,7 +89,7 @@ class Goomba(Enemy):
         sprites_hit = pygame.sprite.spritecollide(self, sprites, False)
         if sprites_hit:
             for s in sprites_hit:
-                if s.tag == 'brick':
+                if s.tag in ['brick', 'ground', 'pipe']:
                     c = self.rect.clip(s.rect)  # collision rect
                     if c.width >= c.height:
                         if self.vely >= 0:
@@ -79,5 +97,5 @@ class Goomba(Enemy):
                             self.y = float(self.rect.y)
                             self.is_grounded = True
                             self.vely = 0
-                    if c.width < c.height:
+                    if c.width < c.height and s.tag != 'ground':
                         self.speed *= -1

@@ -8,7 +8,7 @@ class Bullet(Sprite):
         super().__init__()
         self.screen = screen
         self.speed = 6
-        self.max_distace = 500
+        self.max_distace = 600
         self.traveled_distance = 0
         self.direction = direction
         self.anim = Timer([pygame.image.load('images/player/fire1.bmp'),
@@ -31,10 +31,11 @@ class Bullet(Sprite):
             # check collision with enemies
             hit = pygame.sprite.spritecollideany(self, enemies)
             if hit:
-                player.stats.score += hit.point
-                player.hud.prep_score()
-                self.kill()
-                hit.kill()
+                if not hit.dead:
+                    player.stats.score += hit.point
+                    player.hud.prep_score()
+                    self.kill()
+                    hit.die()
 
             # check collision with platforms
             hit = pygame.sprite.spritecollideany(self, platforms)

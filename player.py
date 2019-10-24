@@ -169,10 +169,8 @@ class Player(Sprite):
                         self.invincible = True
                         self.invin_start_time = pygame.time.get_ticks()
                         s.kill()
-                    if s.tag == 'brick':
+                    if s.tag in ['brick', 'ground', 'pipe']:
                         self.collide_brick(s)
-                    if s.tag == 'ground':
-                        self.collide_ground(s)
                     if s.tag == 'win':
                         pygame.mixer.stop()
                         self.stage_clear_sound.play()
@@ -382,7 +380,7 @@ class Player(Sprite):
                     self.current_anim = self.fire_throw_anim
 
     def jump(self):
-        if self.stage_clear:
+        if self.stage_clear or self.dead:
             return
 
         jump_power = self.jump_power
@@ -423,7 +421,7 @@ class Player(Sprite):
                 self.y = float(self.rect.y)
                 self.is_grounded = True
                 self.vel.y = 0
-            if self.vel.y < 0:
+            if self.vel.y < 0 and brick.tag != 'pipe' and brick.tag != 'ground':
                 self.rect.top = brick.rect.bottom
                 self.y = float(self.rect.y)
                 self.vel.y = 0
@@ -440,16 +438,10 @@ class Player(Sprite):
                 self.rect.left = brick.rect.right
                 self.x = float(self.rect.x)
 
-    def collide_ground(self, ground):
-        c = self.rect.clip(ground.rect)
-        if c.width >= c.height:
-            if self.vel.y >= 0 and self.rect.top < ground.rect.top:
-                self.rect.bottom = ground.rect.top + 1
-                self.y = float(self.rect.y)
-                self.is_grounded = True
-                self.vel.y = 0
-
     def collide_enemy(self, enemy):
+        if enemy.dead:
+            return
+
         if self.invincible:
             self.stats.score += enemy.point
             self.hud.prep_score()
@@ -466,7 +458,6 @@ class Player(Sprite):
             self.rect.y = int(self.y)
             enemy.die()
             return
-
         self.get_hit()
 
     def draw1(self):  # draw with camera
