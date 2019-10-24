@@ -97,5 +97,5 @@ class Goomba(Enemy):
                             self.y = float(self.rect.y)
                             self.is_grounded = True
                             self.vely = 0
-                    if c.width < c.height and s.tag != 'ground':
+                    if c.width < c.height:
                         self.speed *= -1
