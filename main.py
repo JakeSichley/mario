@@ -8,6 +8,7 @@ from enemy import *
 from stage_manager import StageManager
 from credits import CreditsScreen
 from gameover import GameoverScreen
+from help import HelpText
 
 FPS = 60
 
@@ -26,6 +27,7 @@ def play():
     hud = HUD(screen=screen, settings=settings, stats=stats, stage_manager=sm)
     pc = Player(screen=screen, settings=settings, stats=stats, stage_manager=sm, camera=camera, hud=hud)
     sm.load_stage(stage=stats.current_stage, hud=hud)
+    help_text = HelpText(screen=screen, settings=settings)
     pygame.mouse.set_visible(False)
 
     # Main loop
@@ -46,6 +48,8 @@ def play():
 
         if stats.current_stage < 4 and stats.current_stage != -1:
             hud.draw()
+            if stats.current_stage == 1:
+                help_text.draw(camera)
         elif stats.current_stage == 4:
             cs.draw()
         elif stats.current_stage == -1:

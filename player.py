@@ -172,13 +172,14 @@ class Player(Sprite):
                     if s.tag in ['brick', 'ground', 'pipe']:
                         self.collide_brick(s)
                     if s.tag == 'win':
-                        pygame.mixer.stop()
-                        self.stage_clear_sound.play()
-                        self.stage_clear = True
-                        score = int(abs(s.rect.bottom - self.rect.bottom) * 10 +
-                                    ((self.sm.time_limit - self.sm.time_elapsed)//1000) * 10)
-                        self.stats.score += score
-                        self.hud.prep_score()
+                        if s.rect.centerx - 8 <= self.rect.centerx <= s.rect.centerx + 8:
+                            pygame.mixer.stop()
+                            self.stage_clear_sound.play()
+                            self.stage_clear = True
+                            score = int(abs(s.rect.bottom - self.rect.bottom) * 10 +
+                                        ((self.sm.time_limit - self.sm.time_elapsed)//1000) * 10)
+                            self.stats.score += score
+                            self.hud.prep_score()
             # check collision with enemies
             enemies_hit = pygame.sprite.spritecollide(self, enemies, False)
             if enemies_hit:
