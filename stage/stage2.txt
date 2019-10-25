@@ -13,15 +13,18 @@
 
 
 
-   
 
 
-
-     
-    
-
-                i                       
-                
-
-                              g          w       
-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+h     hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+h                                                     hh  hhhhhh
+h                                                     hh  hhhhhh
+h                                                   hh        hh
+h                                                   hh        hh
+h                                                   hh        hh
+h                            h         h hhhh s     hh        hh
+h         iiiii        x x             h h  h h     hhhh  hhhhhh
+h                    x x x x   x       hhh  hhh       hh
+h                  x x x x x   x x                    hh
+h                x x x x x x   x x               g                                                                                                                                                                w
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd

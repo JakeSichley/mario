@@ -42,45 +42,40 @@ class StageManager:
         if stage in [1, 3]:
             self.settings.bg_color = (90, 148, 252)
         if stage in [2]:
-            self.settings.bg_color = (100, 100, 255)
+            self.settings.bg_color = (0, 0, 0)
         if stage in [-1, 4]:
             self.settings.bg_color = (0, 0, 0)
 
+        # set up tile set
+        tile_dict = {'b': ['brick', pygame.image.load('images/Tile/brick.png')],
+                     'o': ['ground', pygame.image.load('images/Tile/barrier.png')],
+                     'x': ['ground', pygame.image.load('images/Tile/barrier2.png')],
+                     'd': ['ground', pygame.image.load('images/Tile/ground2.png')],
+                     'h': ['brick', pygame.image.load('images/Tile/brick2.png')],
+                     'g': ['ground', pygame.image.load('images/Tile/ground.png')],
+                     'p': ['pipe', pygame.image.load('images/Tile/pipe.png')],
+                     'P': ['pipe', pygame.image.load('images/Tile/pipe_end.png')],
+                     '1': ['cloud_start', pygame.image.load('images/Tile/cloud_start.png')],
+                     '2': ['cloud', pygame.image.load('images/Tile/cloud.png')],
+                     '3': ['cloud_end', pygame.image.load('images/Tile/cloud_end.png')],
+                     '6': ['bush_start', pygame.image.load('images/Tile/bush_start.png')],
+                     '7': ['bush', pygame.image.load('images/Tile/bush.png')],
+                     '8': ['bush_end', pygame.image.load('images/Tile/bush_end.png')],
+                     'M': ['mountain', pygame.image.load('images/Tile/mountain.png')],
+                     'm': ['mountain', pygame.image.load('images/Tile/mountain.png')],
+                     'i': ['item', pygame.image.load('images/Tile/box.png')],
+                     'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
+                     's': ['star', pygame.image.load('images/Tile/star.png')],
+                     'c': ['castle', pygame.image.load('images/Tile/castle.png')],
+                     'w': ['win', pygame.image.load('images/Tile/flag.png')]}
+
         if stage == 1:
-            # set up tile set
-            tile_dict = {'b': ['brick', pygame.image.load('images/Tile/brick.png')],
-                         'o': ['ground', pygame.image.load('images/Tile/barrier.png')],
-                         'g': ['ground', pygame.image.load('images/Tile/ground.png')],
-                         'p': ['pipe', pygame.image.load('images/Tile/pipe.png')],
-                         'P': ['pipe', pygame.image.load('images/Tile/pipe_end.png')],
-                         '1': ['cloud_start', pygame.image.load('images/Tile/cloud_start.png')],
-                         '2': ['cloud', pygame.image.load('images/Tile/cloud.png')],
-                         '3': ['cloud_end', pygame.image.load('images/Tile/cloud_end.png')],
-                         '6': ['bush_start', pygame.image.load('images/Tile/bush_start.png')],
-                         '7': ['bush', pygame.image.load('images/Tile/bush.png')],
-                         '8': ['bush_end', pygame.image.load('images/Tile/bush_end.png')],
-                         'M': ['mountain', pygame.image.load('images/Tile/mountain.png')],
-                         'm': ['mountain', pygame.image.load('images/Tile/mountain.png')],
-                         'i': ['item', pygame.image.load('images/Tile/box.png')],
-                         'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
-                         's': ['star', pygame.image.load('images/Tile/star.png')],
-                         'c': ['castle', pygame.image.load('images/Tile/castle.png')],
-                         'w': ['win', pygame.image.load('images/Tile/flag.png')]}
             self.load('stage/stage1.txt', tile_dict)  # build map form txt file
         if stage == 2:
-            tile_dict = {'b': ['brick', pygame.image.load('images/Tile/brick.png')],
-                         'i': ['item', pygame.image.load('images/Tile/box.png')],
-                         'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
-                         'w': ['win', pygame.image.load('images/Tile/flag.png')]}
             self.load('stage/stage2.txt', tile_dict)
         if stage == 3:
-            tile_dict = {'b': ['brick', pygame.image.load('images/Tile/brick.png')],
-                         'i': ['item', pygame.image.load('images/Tile/box.png')],
-                         'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
-                         'w': ['win', pygame.image.load('images/Tile/flag.png')]}
             self.load('stage/stage3.txt', tile_dict)
         if stage == 4:  # credits screen
-            tile_dict = {'b': ['brick', pygame.image.load('images/Tile/brick.png')]}
             self.load('stage/credits.txt', tile_dict)
 
         # load music
