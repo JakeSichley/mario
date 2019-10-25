@@ -118,7 +118,7 @@ class Player(Sprite):
         self.invincible_sound = pygame.mixer.Sound('audio/invincibility.ogg')
 
         # pop-up stage clear score
-        self.font = pygame.font.Font(None, 24)
+        self.font = pygame.font.Font(None, 16)
         self.score_text = self.font.render('0', True, (255, 255, 255), self.settings.bg_color)
         self.score_rect = self.score_text.get_rect()
 
@@ -187,7 +187,7 @@ class Player(Sprite):
                             self.score_text = self.font.render(str(score), True, (255, 255, 255),
                                                                self.settings.bg_color)
                             self.score_rect = self.score_text.get_rect()
-                            self.score_rect.bottom = s.rect.top + 3
+                            self.score_rect.bottom = s.rect.top + 1
                             self.score_rect.centerx = s.rect.centerx
                             self.hud.prep_score()
             # check collision with enemies
