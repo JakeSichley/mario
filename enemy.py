@@ -77,7 +77,7 @@ class Goomba(Enemy):
         else:
             if self.rect.x - player.rect.x < 350:
                 self.chasing_player = True
-            if self.chasing_player:
+            if self.chasing_player and not self.dead:
                 self.x -= self.speed
 
         self.y += self.vely

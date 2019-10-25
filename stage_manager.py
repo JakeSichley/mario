@@ -80,11 +80,13 @@ class StageManager:
 
         # load music
         pygame.mixer.stop()
-        if stage in [1, 3]:
+        if stage in [1]:  # overworld stages
             self.bgm = pygame.mixer.Sound('audio/overworld.ogg')
-        elif stage in [2]:
+        elif stage in [2]:  # underground stages
+            self.bgm = pygame.mixer.Sound('audio/underground.ogg')
+        elif stage in [3]:  # underwater stages
             self.bgm = pygame.mixer.Sound('audio/underwater.ogg')
-        elif stage == 4:
+        elif stage == 4:  # credits screen
             self.bgm = pygame.mixer.Sound('audio/ending.ogg')
         self.bgm.play(-1)
 

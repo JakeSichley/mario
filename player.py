@@ -210,7 +210,7 @@ class Player(Sprite):
         # gravity
         if not self.is_grounded:
             self.vel.y += self.gravity
-            if self.stats.current_stage == 2:
+            if self.stats.current_stage == self.stats.swim_stage:
                 if self.vel.y >= self.max_water_gravity:
                     self.vel.y = self.max_water_gravity
             else:
@@ -288,17 +288,17 @@ class Player(Sprite):
         else:
             if self.vel.y != 0:  # jump/fall animation
                 if self.level == 1:
-                    if self.stats.current_stage == 2:
+                    if self.stats.current_stage == self.stats.swim_stage:
                         self.current_anim = self.swim_anim
                     else:
                         self.current_anim = self.jump_anim
                 elif self.level == 2:
-                    if self.stats.current_stage == 2:
+                    if self.stats.current_stage == self.stats.swim_stage:
                         self.current_anim = self.big_swim_anim
                     else:
                         self.current_anim = self.big_jump_anim
                 else:
-                    if self.stats.current_stage == 2:
+                    if self.stats.current_stage == self.stats.swim_stage:
                         self.current_anim = self.fire_swim_anim
                     else:
                         self.current_anim = self.fire_jump_anim
@@ -329,9 +329,7 @@ class Player(Sprite):
     def level_up(self, new_level):
         self.level = new_level
         self.level_up_sound.play()
-        if self.level == 2:
-            self.change_rect(self.big_idle_image.get_rect())
-        if self.level >= 3:
+        if self.level >= 2:
             self.change_rect(self.big_idle_image.get_rect())
 
     def change_rect(self, new_rect):
@@ -385,7 +383,7 @@ class Player(Sprite):
             return
 
         jump_power = self.jump_power
-        if self.stats.current_stage == 2:  # swim stage
+        if self.stats.current_stage == self.stats.swim_stage:  # swim stage
             jump_power = self.swim_power
         else:
             self.jump_sound.play()
