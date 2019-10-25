@@ -25,6 +25,7 @@ class CreditsScreen:
         self.bowsette_rect.bottom = 625
         self.bowsette_rect.centerx = self.text_rect.centerx
         self.bg_image = pygame.image.load('images/credits_screen.png')
+        # self.bg_image = pygame.transform.scale(self.bg_image, self.screen_rect.size)
 
     def draw(self):
         self.screen.fill(self.text_box_color, self.text_box)

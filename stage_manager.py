@@ -1,7 +1,7 @@
-import pygame
 from tile import *
 from enemy import *
 from pygame.sprite import Group
+from warp_zone import WarpZone
 
 
 class StageManager:
@@ -11,6 +11,7 @@ class StageManager:
         self.screen = screen
         self.enemies = Group()
         self.platforms = Group()
+        self.warp_zones = Group()
         self.time_limit = 401000  # 401s
         self.time_start = 0
         self.time_elapsed = 0
@@ -32,10 +33,13 @@ class StageManager:
             p.draw(camera)
         for e in self.enemies:
             e.draw(camera)
+        for w in self.warp_zones:
+            w.draw(self.screen, camera)
 
     def load_stage(self, stage, hud):  # character's position in txt file is left bot coordinate
         self.enemies.empty()
         self.platforms.empty()
+        self.warp_zones.empty()
         self.time_start = pygame.time.get_ticks()
         self.time_elapsed = 0
         # set up bg_color
@@ -71,6 +75,8 @@ class StageManager:
 
         if stage == 1:
             self.load('stage/stage1.txt', tile_dict)  # build map form txt file
+            self.warp_zones.add(WarpZone('start', id=1, left=28*16, bot=10*16))
+            self.warp_zones.add(WarpZone('end', id=1, left=179*16, bot=10*16))
         if stage == 2:
             self.load('stage/stage2.txt', tile_dict)
         if stage == 3:

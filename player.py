@@ -122,7 +122,7 @@ class Player(Sprite):
         self.score_text = self.font.render('0', True, (255, 255, 255), self.settings.bg_color)
         self.score_rect = self.score_text.get_rect()
 
-    def update(self, platforms, enemies):
+    def update(self, platforms, enemies, warp_zones):
         # check stage clear:
         if self.stage_clear:
             if self.stage_clear_sound.is_finished():
@@ -190,11 +190,25 @@ class Player(Sprite):
                             self.score_rect.bottom = s.rect.top + 1
                             self.score_rect.centerx = s.rect.centerx
                             self.hud.prep_score()
+
             # check collision with enemies
             enemies_hit = pygame.sprite.spritecollide(self, enemies, False)
             if enemies_hit:
                 for e in enemies_hit:
                     self.collide_enemy(e)
+
+            # check collision with warp zones
+            hit = pygame.sprite.spritecollideany(self, warp_zones)
+            if hit:
+                if hit.tag == 'start':
+                    if pygame.key.get_pressed()[K_s] or pygame.key.get_pressed()[K_DOWN]:
+                        for w in warp_zones:
+                            if w.tag == 'end' and w.id == hit.id:
+                                self.vel.x = self.vel.y = 0
+                                destination = w.rect
+                                #print('{}---{}'.format(self.rect.x, destination.left))
+                                self.warp(destination.left, destination.bottom)
+                                break
 
         self.move()
         self.y += self.vel.y
@@ -400,6 +414,13 @@ class Player(Sprite):
         self.vel.y = -jump_power
         self.y += self.vel.y
         self.rect.y = int(self.y)
+
+    def warp(self, left, bot):
+        self.rect.left = left
+        self.rect.bottom = bot
+        self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
+        self.camera.set_pos(self.rect.x)
 
     def reset(self):
         self.dead = self.is_grounded = self.invulnerable = self.invincible = self.stage_clear = False
