@@ -18,7 +18,7 @@ class StageManager:
 
     def update(self, player):
         # time over
-        if self.stats.current_stage != 4:
+        if self.stats.current_stage != self.stats.credits_stage:
             self.time_elapsed = pygame.time.get_ticks() - self.time_start
             if self.time_elapsed >= self.time_limit:
                 if not player.dead and not player.stage_clear:
@@ -43,7 +43,7 @@ class StageManager:
             self.settings.bg_color = (90, 148, 252)
         if stage in [2]:
             self.settings.bg_color = (0, 0, 0)
-        if stage in [-1, 4]:
+        if stage in [-1, self.stats.credits_stage]:
             self.settings.bg_color = (0, 0, 0)
 
         # set up tile set
@@ -75,7 +75,7 @@ class StageManager:
             self.load('stage/stage2.txt', tile_dict)
         if stage == 3:
             self.load('stage/stage3.txt', tile_dict)
-        if stage == 4:  # credits screen
+        if stage == self.stats.credits_stage:  # credits screen
             self.load('stage/credits.txt', tile_dict)
 
         # load music
@@ -86,7 +86,7 @@ class StageManager:
             self.bgm = pygame.mixer.Sound('audio/underground.ogg')
         elif stage in [3]:  # underwater stages
             self.bgm = pygame.mixer.Sound('audio/underwater.ogg')
-        elif stage == 4:  # credits screen
+        elif stage == self.stats.credits_stage:  # credits screen
             self.bgm = pygame.mixer.Sound('audio/ending.ogg')
         self.bgm.play(-1)
 
@@ -106,6 +106,7 @@ class StageManager:
                                 self.screen, tile_dict[c][0], tile_dict[c][1], col * 16 - 16, row * 16 + 16))
                         else:
                             self.platforms.add(Tile(self.screen, tile_dict[c][0], tile_dict[c][1], col * 16, row * 16))
+                    # create enemy
                     if c == 'G':  # goomba
                         self.enemies.add(Goomba(self.screen, self.settings, col * 16, row * 16))
                     col += 1

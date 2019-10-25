@@ -35,7 +35,7 @@ class Bullet(Sprite):
                     player.stats.score += hit.point
                     player.hud.prep_score()
                     self.kill()
-                    hit.die()
+                    hit.get_hit()
 
             # check collision with platforms
             hit = pygame.sprite.spritecollideany(self, platforms)

@@ -454,7 +454,7 @@ class Player(Sprite):
         if self.invincible:
             self.stats.score += enemy.point
             self.hud.prep_score()
-            enemy.die()
+            enemy.get_hit()
             return
 
         if enemy.tag != 'boss':

@@ -28,6 +28,9 @@ class Camera:
     def out_of_camera(self, target):
         return self.rect.x + target.rect.x < 0
 
+    def set_pos(self, dest_x):
+        self.rect.x = -(self.settings.scr_width + dest_x)
+
     def reset(self):
         self.rect.x = self.rect.y = 0
         self.x = float(self.rect.x)
