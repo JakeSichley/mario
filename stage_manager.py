@@ -83,6 +83,8 @@ class StageManager:
             self.load('stage/stage3.txt', tile_dict)
         if stage == self.stats.credits_stage:  # credits screen
             self.load('stage/credits.txt', tile_dict)
+            for i in range(0, 18):
+                self.platforms.add(Tile(self.screen, tile_dict['o'][0], tile_dict['o'][1], i * 16, 0))
 
         # load music
         pygame.mixer.stop()

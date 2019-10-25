@@ -37,10 +37,10 @@ class Player(Sprite):
         self.vel = pygame.Vector2()
         self.vel.x, self.vel.y = 0, 0
         self.gravity = 0.3
-        self.max_gravity = 8
+        self.max_gravity = 7
         self.max_water_gravity = 4.5
         self.speed = 4
-        self.jump_power = 8
+        self.jump_power = 6.5
         self.swim_power = 4.5
         self.is_grounded = False
         self.is_sliding = False
@@ -451,7 +451,7 @@ class Player(Sprite):
                 self.y = float(self.rect.y)
                 self.is_grounded = True
                 self.vel.y = 0
-            if self.vel.y < 0 and brick.tag != 'pipe' and brick.tag != 'ground':
+            if self.vel.y < 0 and self.rect.top - 1 < brick.rect.bottom < self.rect.bottom:
                 self.rect.top = brick.rect.bottom
                 self.y = float(self.rect.y)
                 self.vel.y = 0
