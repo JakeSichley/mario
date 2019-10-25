@@ -20,9 +20,9 @@ class CreditsScreen:
         self.text_box_color = (255, 255, 255)
         self.text_box = pygame.Rect(0, 0, self.text_rect.width + 5, self.text_rect.height + 5)
         self.text_box.centerx = 510
-        self.text_box.centery = 380
+        self.text_box.centery = 550
         self.text_rect.center = self.text_box.center
-        self.bowsette_rect.bottom = 464
+        self.bowsette_rect.bottom = 625
         self.bowsette_rect.centerx = self.text_rect.centerx
         self.bg_image = pygame.image.load('images/credits_screen.png')
 

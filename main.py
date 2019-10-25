@@ -21,8 +21,8 @@ def play():
     pygame.display.set_caption("Mario")
     stats = GameStats()
     main_clock = pygame.time.Clock()
-    cs = CreditsScreen(screen=screen)
-    go = GameoverScreen(screen=screen)
+    cs = CreditsScreen(screen=window)
+    go = GameoverScreen(screen=window)
     camera = Camera(settings=settings)
     sm = StageManager(screen=screen, settings=settings, stats=stats)
     hud = HUD(screen=window, settings=settings, stats=stats, stage_manager=sm)
@@ -49,11 +49,11 @@ def play():
             sm.draw(camera)
             pc.draw1()
 
-        if stats.current_stage < 4 and stats.current_stage != -1:
+        if stats.current_stage < stats.credits_stage and stats.current_stage != -1:
             hud.draw()
             if stats.current_stage == 1:
                 help_text.draw(camera)
-        elif stats.current_stage == 4:
+        elif stats.current_stage == stats.credits_stage:
             cs.draw()
         elif stats.current_stage == -1:
             go.draw()
