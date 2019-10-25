@@ -457,16 +457,17 @@ class Player(Sprite):
             enemy.die()
             return
 
-        c = self.rect.clip(enemy.rect)  # collision rect
-        if c.width > c.height and self.vel.y > 0:
-            self.stomp_sound.play()
-            self.stats.score += enemy.point
-            self.hud.prep_score()
-            self.vel.y = -6
-            self.y += self.vel.y
-            self.rect.y = int(self.y)
-            enemy.die()
-            return
+        if enemy.tag != 'boss':
+            c = self.rect.clip(enemy.rect)  # collision rect
+            if c.width > c.height and self.vel.y > 0:
+                self.stomp_sound.play()
+                self.stats.score += enemy.point
+                self.hud.prep_score()
+                self.vel.y = -6
+                self.y += self.vel.y
+                self.rect.y = int(self.y)
+                enemy.die()
+                return
         self.get_hit()
 
     def draw1(self):  # draw with camera
