@@ -117,6 +117,11 @@ class Player(Sprite):
         self.gameover_sound = pygame.mixer.Sound('audio/gameover.wav')
         self.invincible_sound = pygame.mixer.Sound('audio/invincibility.ogg')
 
+        # pop-up stage clear score
+        self.font = pygame.font.Font(None, 24)
+        self.score_text = self.font.render('0', True, (255, 255, 255), self.settings.bg_color)
+        self.score_rect = self.score_text.get_rect()
+
     def update(self, platforms, enemies):
         # check stage clear:
         if self.stage_clear:
@@ -179,6 +184,11 @@ class Player(Sprite):
                             score = int(abs(s.rect.bottom - self.rect.bottom) * 10 +
                                         ((self.sm.time_limit - self.sm.time_elapsed)//1000) * 10)
                             self.stats.score += score
+                            self.score_text = self.font.render(str(score), True, (255, 255, 255),
+                                                               self.settings.bg_color)
+                            self.score_rect = self.score_text.get_rect()
+                            self.score_rect.bottom = s.rect.top + 3
+                            self.score_rect.centerx = s.rect.centerx
                             self.hud.prep_score()
             # check collision with enemies
             enemies_hit = pygame.sprite.spritecollide(self, enemies, False)
@@ -461,6 +471,10 @@ class Player(Sprite):
 
     def draw1(self):  # draw with camera
         self.update_animation()
+
+        # display stage clear score
+        if self.stage_clear:
+            self.screen.blit(self.score_text, self.score_rect.move(self.camera.rect.topleft))
 
         # draw bullets
         for b in self.bullets:

@@ -14,7 +14,7 @@
 
 
 
-
+                                                                                                     w
 h     hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
 h                                                     hh  hhhhhh
 h                                                     hh  hhhhhh
@@ -25,6 +25,6 @@ h                            h         h hhhh s     hh        hh
 h         iiiii        x x             h h  h h     hhhh  hhhhhh
 h                    x x x x   x       hhh  hhh       hh
 h                  x x x x x   x x                    hh
-h                x x x x x x   x x               g                                                                                                                                                                w
+h                x x x x x x   x x               G                          w                                                                                                                                      w
 dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
