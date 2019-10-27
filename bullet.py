@@ -40,7 +40,8 @@ class Bullet(Sprite):
             # check collision with platforms
             hit = pygame.sprite.spritecollideany(self, platforms)
             if hit:
-                self.kill()
+                if hit.tag in ['ground', 'pipe', 'brick']:
+                    self.kill()
 
     def draw(self, camera):
         self.screen.blit(self.anim.imagerect(), camera.apply(self))

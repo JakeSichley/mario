@@ -29,6 +29,8 @@ class StageManager:
 
         for e in self.enemies:
             e.update(player, self.platforms)
+        for p in self.platforms:
+            p.update()
 
     def draw(self, camera):
         for p in self.platforms:
@@ -136,7 +138,10 @@ class StageManager:
         f.close()
 
     def spawn_sprite(self, tag, img, x, y):
-        self.platforms.add(Tile(self.screen, tag, img, x, y))
+        if tag == 'coin':
+            self.platforms.add(PopupCoin(self.screen, tag, img, x, y))
+        else:
+            self.platforms.add(Tile(self.screen, tag, img, x, y))
 
     def reset(self, hud):
         self.load_stage(self.stats.current_stage, hud)

@@ -116,6 +116,8 @@ class Player(Sprite):
         self.break_brick_sound = pygame.mixer.Sound('audio/breakbrick.wav')
         self.gameover_sound = pygame.mixer.Sound('audio/gameover.wav')
         self.invincible_sound = pygame.mixer.Sound('audio/invincibility.ogg')
+        self.coin_sound = pygame.mixer.Sound('audio/coin.wav')
+        self.item_appear_sound = pygame.mixer.Sound('audio/powerup_appears.wav')
 
         # pop-up stage clear score
         self.font = pygame.font.Font(None, 16)
@@ -456,20 +458,24 @@ class Player(Sprite):
             self.y = float(self.rect.y)
             self.vel.y = 0
             # hit here
-            self.break_brick_sound.play()
             box.kill()
             x = box.rect.x
             y = box.rect.bottom
             self.sm.spawn_sprite(tag='ground', img=pygame.image.load('images/Tile/box_hit.png'), x=x, y=y)
             if box.item == 'coin':
-                self.sm.spawn_sprite(tag=box.item, img=pygame.image.load('images/Tile/coin.png'), x=x, y=y-16)
+                self.sm.spawn_sprite(tag=box.item, img=pygame.image.load('images/Tile/coin.png'), x=x, y=y-8)
+                self.stats.coins += 1
+                self.stats.update_coins()
+                self.coin_sound.play()
+                self.hud.prep_coins()
+                self.hud.prep_lives()
             if box.item == 'level_up':
+                self.item_appear_sound.play()
                 if self.level < 2:
                     self.sm.spawn_sprite(tag='mushroom',
                                          img=pygame.image.load('images/Tile/mushroom.png'), x=x, y=y - 16)
                 else:
                     self.sm.spawn_sprite(tag='flower', img=pygame.image.load('images/Tile/flower.bmp'), x=x, y=y - 16)
-
 
     def collide_brick(self, brick):
         c = self.rect.clip(brick.rect)  # collision rect
