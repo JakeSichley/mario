@@ -174,8 +174,6 @@ class Player(Sprite):
                             self.level_up(3)
                         s.kill()
                     if s.tag == 'star':
-                        self.stats.score += 1000
-                        self.hud.prep_score()
                         if not self.invincible:
                             self.sm.bgm.stop()
                             self.invincible_sound.play(-1)
