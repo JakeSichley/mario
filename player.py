@@ -162,14 +162,20 @@ class Player(Sprite):
             if sprites_hit:
                 for s in sprites_hit:
                     if s.tag == 'mushroom':
+                        self.stats.score += 1000
+                        self.hud.prep_score()
                         if self.level < 2:
                             self.level_up(2)
                         s.kill()
                     if s.tag == 'flower':
+                        self.stats.score += 1000
+                        self.hud.prep_score()
                         if self.level < 3:
                             self.level_up(3)
                         s.kill()
                     if s.tag == 'star':
+                        self.stats.score += 1000
+                        self.hud.prep_score()
                         if not self.invincible:
                             self.sm.bgm.stop()
                             self.invincible_sound.play(-1)
@@ -466,6 +472,8 @@ class Player(Sprite):
                 self.stats.coins += 1
                 self.stats.update_coins()
                 self.coin_sound.play()
+                self.stats.score += 100
+                self.hud.prep_score()
                 self.hud.prep_coins()
                 self.hud.prep_lives()
             if box.item == 'level_up':

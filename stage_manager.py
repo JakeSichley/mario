@@ -30,7 +30,7 @@ class StageManager:
         for e in self.enemies:
             e.update(player, self.platforms)
         for p in self.platforms:
-            p.update()
+            p.update(self.platforms)
 
     def draw(self, camera):
         for p in self.platforms:
@@ -140,6 +140,8 @@ class StageManager:
     def spawn_sprite(self, tag, img, x, y):
         if tag == 'coin':
             self.platforms.add(PopupCoin(self.screen, tag, img, x, y))
+        elif tag == 'mushroom':
+            self.platforms.add(Mushroom(self.screen, tag, img, x, y))
         else:
             self.platforms.add(Tile(self.screen, tag, img, x, y))
 
