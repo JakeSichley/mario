@@ -210,7 +210,6 @@ class Player(Sprite):
                             if w.tag == 'end' and w.id == hit.id:
                                 self.vel.x = self.vel.y = 0
                                 destination = w.rect
-                                #print('{}---{}'.format(self.rect.x, destination.left))
                                 self.warp(destination.left, destination.bottom)
                                 break
 
@@ -479,7 +478,7 @@ class Player(Sprite):
 
     def collide_brick(self, brick):
         c = self.rect.clip(brick.rect)  # collision rect
-        if c.width >= c.height:
+        if c.width > c.height:
             if self.vel.y >= 0 and self.rect.top < brick.rect.top:
                 self.rect.bottom = brick.rect.top + 1
                 self.y = float(self.rect.y)
