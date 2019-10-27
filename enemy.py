@@ -4,6 +4,10 @@ from timer import Timer
 from pygame.font import Font
 
 
+def load(image):
+    return pygame.image.load(image)
+
+
 class Enemy(Sprite):
     def __init__(self, screen, settings, frames, point, left, bot):
         super().__init__()
@@ -31,6 +35,9 @@ class Enemy(Sprite):
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
+    def get_hit(self):
+        self.die()
+
     def die(self):
         self.dead = True
         self.point_start_time = pygame.time.get_ticks()
@@ -46,6 +53,9 @@ class Enemy(Sprite):
         else:
             image = self.anim.imagerect()
         self.screen.blit(image, camera.apply(self))
+
+    def changeframes(self, frames):
+        self.anim = Timer(frames)
 
 
 class Goomba(Enemy):
@@ -99,3 +109,81 @@ class Goomba(Enemy):
                             self.vely = 0
                     if c.width < c.height:
                         self.speed *= -1
+                        self.x -= self.speed
+                        self.rect.x = int(self.x)
+
+
+class KoopaTroopa(Enemy):
+    def __init__(self, screen, settings, left, bot):
+        self.screen = screen
+        self.screen_rect = screen.get_rect()
+        self.status = 'walkleft'
+        self.animations = {
+            'walkleft': [load('images/Enemies/87.png'), load('images/Enemies/96.png')],
+            'walkright': [load('images/Enemies/106.png'), load('images/Enemies/97.png')],
+            'shell': [load('images/Enemies/118.png')],
+            'unshell': [load('images/Enemies/113.png')]
+        }
+        super().__init__(screen=screen, settings=settings, frames=self.animations[self.status],
+                         point=100, left=left, bot=bot)
+        #self.rect = load('images/Enemies/87.png').get_rect()
+        self.is_grounded = False
+        self.chasing_player = False
+        self.speed = 1
+        self.gravity = 0.3
+        self.vely = 0
+
+    def update(self, player, sprites):
+        super().update(player, sprites)
+
+        # check falling off
+        if self.rect.y > self.screen_rect.height:
+            self.kill()
+
+        # gravity
+        if not self.is_grounded:
+            self.vely += self.gravity
+            if self.vely >= 6:
+                self.vely = 6
+        else:
+            if self.rect.x - player.rect.x < 350:
+                self.chasing_player = True
+            if self.chasing_player and not self.dead:
+                self.x -= self.speed
+
+        self.y += self.vely
+        self.rect.x = int(self.x)
+        self.rect.y = int(self.y)
+
+        # collision
+        self.is_grounded = False
+        sprites_hit = pygame.sprite.spritecollide(self, sprites, False)
+        if sprites_hit:
+            for s in sprites_hit:
+                # Enemy, ground can't be broke, brick can, pipe is pipe
+                if s.tag in ['brick', 'ground', 'pipe']:
+                    c = self.rect.clip(s.rect)  # collision rect
+                    if c.width >= c.height:
+                        if self.vely >= 0:
+                            self.rect.bottom = s.rect.top + 1
+                            self.y = float(self.rect.y)
+                            self.is_grounded = True
+                            self.vely = 0
+                    if c.width < c.height:
+                        self.speed *= -1
+                        self.x -= self.speed
+                        self.rect.x = int(self.x)
+                        if self.status == 'walkleft':
+                            self.status = 'walkright'
+                        elif self.status == 'walkright':
+                            self.status = 'walkleft'
+                        super().changeframes(self.animations[self.status])
+            if len(sprites_hit) == 1:
+                if self.rect.left <= sprites_hit[0].rect.left - sprites_hit[0].rect.width + 2:
+                    self.speed *= -1
+                    self.x -= self.speed
+                    self.rect.x = int(self.x)
+                if self.rect.right >= sprites_hit[0].rect.right + sprites_hit[0].rect.width - 2:
+                    self.speed *= -1
+                    self.x -= self.speed
+                    self.rect.x = int(self.x)
