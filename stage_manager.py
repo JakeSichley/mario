@@ -2,6 +2,7 @@ from tile import *
 from enemy import *
 from pygame.sprite import Group
 from warp_zone import WarpZone
+from mystery_box import MysteryBox
 
 
 class StageManager:
@@ -12,6 +13,7 @@ class StageManager:
         self.enemies = Group()
         self.platforms = Group()
         self.warp_zones = Group()
+        self.boxes = Group()
         self.time_limit = 401000  # 401s
         self.time_start = 0
         self.time_elapsed = 0
@@ -33,6 +35,8 @@ class StageManager:
             p.draw(camera)
         for e in self.enemies:
             e.draw(camera)
+        for b in self.boxes:
+            b.draw(camera)
         for w in self.warp_zones:
             w.draw(self.screen, camera)
 
@@ -67,7 +71,8 @@ class StageManager:
                      '8': ['bush_end', pygame.image.load('images/Tile/bush_end.png')],
                      'M': ['mountain', pygame.image.load('images/Tile/mountain.png')],
                      'm': ['mountain', pygame.image.load('images/Tile/mountain.png')],
-                     'i': ['item', pygame.image.load('images/Tile/box.png')],
+                     'C': ['mystery', 'coin', pygame.image.load('images/Tile/box.png')],
+                     'L': ['mystery', 'level_up', pygame.image.load('images/Tile/box.png')],
                      'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
                      's': ['star', pygame.image.load('images/Tile/star.png')],
                      'c': ['castle', pygame.image.load('images/Tile/castle.png')],
@@ -107,11 +112,20 @@ class StageManager:
             for l in f:
                 col = 0
                 for c in l:
+                    # create tiles
                     if c in tile_dict:
                         # small mountain needs offset
                         if c == 'm':
                             self.platforms.add(Tile(
                                 self.screen, tile_dict[c][0], tile_dict[c][1], col * 16 - 16, row * 16 + 16))
+                        elif c == 'C':
+                            box = MysteryBox(self.screen, tile_dict[c][0], tile_dict[c][2], col * 16, row * 16)
+                            box.set_item(tile_dict[c][1])
+                            self.platforms.add(box)
+                        elif c == 'L':
+                            box = MysteryBox(self.screen, tile_dict[c][0], tile_dict[c][2], col * 16, row * 16)
+                            box.set_item(tile_dict[c][1])
+                            self.platforms.add(box)
                         else:
                             self.platforms.add(Tile(self.screen, tile_dict[c][0], tile_dict[c][1], col * 16, row * 16))
                     # create enemy
@@ -120,6 +134,9 @@ class StageManager:
                     col += 1
                 row += 1
         f.close()
+
+    def spawn_sprite(self, tag, img, x, y):
+        self.platforms.add(Tile(self.screen, tag, img, x, y))
 
     def reset(self, hud):
         self.load_stage(self.stats.current_stage, hud)

@@ -159,7 +159,7 @@ class Player(Sprite):
             sprites_hit = pygame.sprite.spritecollide(self, platforms, False)
             if sprites_hit:
                 for s in sprites_hit:
-                    if s.tag == 'item':
+                    if s.tag == 'mushroom':
                         if self.level < 2:
                             self.level_up(2)
                         s.kill()
@@ -176,6 +176,8 @@ class Player(Sprite):
                         s.kill()
                     if s.tag in ['brick', 'ground', 'pipe']:
                         self.collide_brick(s)
+                    if s.tag == 'mystery':
+                        self.collide_mystery(s)
                     if s.tag == 'win':
                         if s.rect.centerx - 8 <= self.rect.centerx <= s.rect.centerx + 8:
                             pygame.mixer.stop()
@@ -442,6 +444,32 @@ class Player(Sprite):
         else:
             self.stats.current_stage = -1
             self.gameover_sound.play()
+
+    def collide_mystery(self, box):
+        if self.vel.y >= 0 and self.rect.top < box.rect.top:
+            self.rect.bottom = box.rect.top + 1
+            self.y = float(self.rect.y)
+            self.is_grounded = True
+            self.vel.y = 0
+        if self.vel.y < 0 and self.rect.top - 1 < box.rect.bottom < self.rect.bottom:
+            self.rect.top = box.rect.bottom
+            self.y = float(self.rect.y)
+            self.vel.y = 0
+            # hit here
+            self.break_brick_sound.play()
+            box.kill()
+            x = box.rect.x
+            y = box.rect.bottom
+            self.sm.spawn_sprite(tag='ground', img=pygame.image.load('images/Tile/box_hit.png'), x=x, y=y)
+            if box.item == 'coin':
+                self.sm.spawn_sprite(tag=box.item, img=pygame.image.load('images/Tile/coin.png'), x=x, y=y-16)
+            if box.item == 'level_up':
+                if self.level < 2:
+                    self.sm.spawn_sprite(tag='mushroom',
+                                         img=pygame.image.load('images/Tile/mushroom.png'), x=x, y=y - 16)
+                else:
+                    self.sm.spawn_sprite(tag='flower', img=pygame.image.load('images/Tile/flower.bmp'), x=x, y=y - 16)
+
 
     def collide_brick(self, brick):
         c = self.rect.clip(brick.rect)  # collision rect
