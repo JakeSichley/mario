@@ -28,6 +28,7 @@ class Enemy(Sprite):
         self.point_rect.center = self.rect.center
         self.point_time = 1000
         self.point_start_time = 0
+        self.detect_range = 200
 
     def set_pos(self, left, bot):
         self.rect.x = left
@@ -85,7 +86,7 @@ class Goomba(Enemy):
             if self.vely >= 6:
                 self.vely = 6
         else:
-            if self.rect.x - player.rect.x < 350:
+            if self.rect.x - player.rect.x < self.detect_range:
                 self.chasing_player = True
             if self.chasing_player and not self.dead:
                 self.x -= self.speed
@@ -126,7 +127,6 @@ class KoopaTroopa(Enemy):
         }
         super().__init__(screen=screen, settings=settings, frames=self.animations[self.status],
                          point=100, left=left, bot=bot)
-        #self.rect = load('images/Enemies/87.png').get_rect()
         self.is_grounded = False
         self.chasing_player = False
         self.speed = 1
@@ -146,7 +146,7 @@ class KoopaTroopa(Enemy):
             if self.vely >= 6:
                 self.vely = 6
         else:
-            if self.rect.x - player.rect.x < 350:
+            if self.rect.x - player.rect.x < self.detect_range:
                 self.chasing_player = True
             if self.chasing_player and not self.dead:
                 self.x -= self.speed
