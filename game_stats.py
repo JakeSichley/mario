@@ -15,6 +15,6 @@ class GameStats:
         self.lives_left = 3
 
     def update_coins(self):
-        if self.coins >= 50:
-            self.coins -= 50
+        if self.coins >= 100:
+            self.coins -= 100
             self.lives_left += 1

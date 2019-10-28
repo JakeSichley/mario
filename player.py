@@ -167,6 +167,10 @@ class Player(Sprite):
                         if self.level < 2:
                             self.level_up(2)
                         s.kill()
+                    if s.tag == '1_up_mushroom':
+                        self.stats.lives_left += 1
+                        self.hud.prep_lives()
+                        s.kill()
                     if s.tag == 'flower':
                         self.stats.score += 1000
                         self.hud.prep_score()
@@ -174,6 +178,8 @@ class Player(Sprite):
                             self.level_up(3)
                         s.kill()
                     if s.tag == 'star':
+                        self.stats.score += 1000
+                        self.hud.prep_score()
                         if not self.invincible:
                             self.sm.bgm.stop()
                             self.invincible_sound.play(-1)
@@ -470,7 +476,7 @@ class Player(Sprite):
                 self.stats.coins += 1
                 self.stats.update_coins()
                 self.coin_sound.play()
-                self.stats.score += 100
+                self.stats.score += 200
                 self.hud.prep_score()
                 self.hud.prep_coins()
                 self.hud.prep_lives()
