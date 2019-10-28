@@ -16,14 +16,14 @@ FPS = 60
 def play():
     pygame.init()
     settings = Settings()
-    window = pygame.display.set_mode((768, 672), 0, 32)
-    screen = pygame.Surface((settings.scr_width, settings.scr_height))
+    window = pygame.display.set_mode((768, 672), 0, 32)  # window's resolution
+    screen = pygame.Surface((settings.scr_width, settings.scr_height))  # real game's resolution
     pygame.display.set_caption("Mario")
     stats = GameStats()
     main_clock = pygame.time.Clock()
     cs = CreditsScreen(screen=window)
     go = GameoverScreen(screen=window)
-    camera = Camera(settings=settings)
+    camera = Camera(screen=screen)
     sm = StageManager(screen=screen, settings=settings, stats=stats)
     hud = HUD(screen=window, settings=settings, stats=stats, stage_manager=sm)
     pc = Player(screen=screen, settings=settings, stats=stats, stage_manager=sm, camera=camera, hud=hud)
@@ -33,8 +33,10 @@ def play():
 
     # Main loop
     while True:
+        # scale the game's resolution to window's resolution
         resized = pygame.transform.scale(screen, (768, 672))
         window.blit(resized, (0, 0))
+
         gf.check_inputs(player=pc)
 
         if stats.current_stage < 4 and stats.current_stage != -1:

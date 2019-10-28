@@ -133,6 +133,8 @@ class StageManager:
                     # create enemy
                     if c == 'G':  # goomba
                         self.enemies.add(Goomba(self.screen, self.settings, col * 16, row * 16))
+                    if c == 'K':
+                        self.enemies.add(KoopaTroopa(self.screen, self.settings, col * 16, row * 16))
                     col += 1
                 row += 1
         f.close()
