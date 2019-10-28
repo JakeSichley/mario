@@ -6,7 +6,7 @@ class HelpText:
         self.screen = screen
         self.settings = settings
         self.font = Font(None, 30)
-        self.msg = 'A/D: move left/right    Right-Shift: run'
+        self.msg = 'A/D: move left/right    Left-Shift: run'
         self.msg2 = 'W: jump    S: crouch    Space: fire'
         self.text = self.font.render(self.msg, True, (255, 255, 255), self.settings.bg_color)
         self.rect = self.text.get_rect()
