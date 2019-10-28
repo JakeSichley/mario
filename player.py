@@ -243,6 +243,7 @@ class Player(Sprite):
         left = key_pressed[K_a] or key_pressed[K_LEFT]
         right = key_pressed[K_d] or key_pressed[K_RIGHT]
         crouch = key_pressed[K_s] or key_pressed[K_DOWN]
+        run = key_pressed[K_LSHIFT]
 
         # gravity
         if not self.is_grounded:
@@ -280,8 +281,9 @@ class Player(Sprite):
                         self.facing_right = not self.facing_right
                     if not self.camera.out_of_camera(self):
                         self.vel.x -= 0.1
-                        if self.vel.x <= -self.speed:
-                            self.vel.x = -self.speed
+                        max_speed = self.speed if run else self.speed//2
+                        if self.vel.x <= -max_speed:
+                            self.vel.x = -max_speed
                     else:
                         self.vel.x = 0
                 if right:  # move right
@@ -293,8 +295,9 @@ class Player(Sprite):
                     if not self.facing_right:
                         self.facing_right = not self.facing_right
                     self.vel.x += 0.1
-                    if self.vel.x >= self.speed:
-                        self.vel.x = self.speed
+                    max_speed = self.speed if run else self.speed // 2
+                    if self.vel.x >= max_speed:
+                        self.vel.x = max_speed
             if not (left or right) or self.is_crouching:
                 self.is_sliding = False
                 if self.vel.x > 0:

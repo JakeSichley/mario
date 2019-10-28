@@ -1,2 +1,3 @@
-a = (1, 1, 2)
-print(a.count(1))
+a = (1, 3,)
+b = (2,)
+print(a+b)
