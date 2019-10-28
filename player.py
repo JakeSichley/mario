@@ -167,7 +167,7 @@ class Player(Sprite):
                         if self.level < 2:
                             self.level_up(2)
                         s.kill()
-                    if s.tag == '1_up_mushroom':
+                    if s.tag == '1up_mushroom':
                         self.stats.lives_left += 1
                         self.hud.prep_lives()
                         s.kill()
@@ -396,7 +396,7 @@ class Player(Sprite):
         self.invulnerable = False
         self.bullets.empty()
         self.vel.x = 0
-        self.vel.y = -12
+        self.vel.y = -8
         self.is_grounded = False
         self.y += self.vel.y
         self.rect.y = int(self.y)
@@ -490,6 +490,9 @@ class Player(Sprite):
                                          img=pygame.image.load('images/Tile/mushroom.png'), x=x, y=y - 16)
                 else:
                     self.sm.spawn_sprite(tag='flower', img=pygame.image.load('images/Tile/flower.bmp'), x=x, y=y - 16)
+            if box.item == '1up_mushroom':
+                self.sm.spawn_sprite(tag='1up_mushroom',
+                                     img=pygame.image.load('images/Tile/1upmushroom.png'), x=x, y=y - 16)
 
     def collide_brick(self, brick):
         c = self.rect.clip(brick.rect)  # collision rect
@@ -519,7 +522,7 @@ class Player(Sprite):
     def collide_enemy(self, enemy):
         if enemy.dead:
             return
-
+       
         if self.invincible:
             self.stats.score += enemy.point
             self.hud.prep_score()

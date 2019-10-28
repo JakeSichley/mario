@@ -75,6 +75,7 @@ class StageManager:
                      'm': ['mountain', pygame.image.load('images/Tile/mountain.png')],
                      'C': ['mystery', 'coin', pygame.image.load('images/Tile/box.png')],
                      'L': ['mystery', 'level_up', pygame.image.load('images/Tile/box.png')],
+                     'l': ['mystery', '1up_mushroom', pygame.image.load('images/Tile/box.png')],
                      'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
                      's': ['star', pygame.image.load('images/Tile/star.png')],
                      'c': ['castle', pygame.image.load('images/Tile/castle.png')],
@@ -120,11 +121,7 @@ class StageManager:
                         if c == 'm':
                             self.platforms.add(Tile(
                                 self.screen, tile_dict[c][0], tile_dict[c][1], col * 16 - 16, row * 16 + 16))
-                        elif c == 'C':
-                            box = MysteryBox(self.screen, tile_dict[c][0], tile_dict[c][2], col * 16, row * 16)
-                            box.set_item(tile_dict[c][1])
-                            self.platforms.add(box)
-                        elif c == 'L':
+                        elif c in ['C', 'L', 'l']:
                             box = MysteryBox(self.screen, tile_dict[c][0], tile_dict[c][2], col * 16, row * 16)
                             box.set_item(tile_dict[c][1])
                             self.platforms.add(box)
@@ -142,7 +139,7 @@ class StageManager:
     def spawn_sprite(self, tag, img, x, y):
         if tag == 'coin':
             self.platforms.add(PopupCoin(self.screen, tag, img, x, y))
-        elif tag == 'mushroom':
+        elif tag == 'mushroom' or tag == '1up_mushroom':
             self.platforms.add(Mushroom(self.screen, tag, img, x, y))
         else:
             self.platforms.add(Tile(self.screen, tag, img, x, y))
