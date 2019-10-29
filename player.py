@@ -120,8 +120,8 @@ class Player(Sprite):
         self.item_appear_sound = pygame.mixer.Sound('audio/powerup_appears.wav')
 
         # pop-up stage clear score
-        self.font = pygame.font.Font(None, 16)
-        self.score_text = self.font.render('0', True, (255, 255, 255), self.settings.bg_color)
+        self.font = pygame.font.Font(None, 12)
+        self.score_text = self.font.render('0', False, (255, 255, 255), self.settings.bg_color)
         self.score_rect = self.score_text.get_rect()
 
     def update(self, platforms, enemies, warp_zones):
@@ -198,7 +198,7 @@ class Player(Sprite):
                             score = int(abs(s.rect.bottom - self.rect.bottom) * 10 +
                                         ((self.sm.time_limit - self.sm.time_elapsed)//1000) * 10)
                             self.stats.score += score
-                            self.score_text = self.font.render(str(score), True, (255, 255, 255),
+                            self.score_text = self.font.render(str(score), False, (255, 255, 255),
                                                                self.settings.bg_color)
                             self.score_rect = self.score_text.get_rect()
                             self.score_rect.bottom = s.rect.top + 1
@@ -522,7 +522,7 @@ class Player(Sprite):
     def collide_enemy(self, enemy):
         if enemy.dead:
             return
-       
+
         if self.invincible:
             self.stats.score += enemy.point
             self.hud.prep_score()
