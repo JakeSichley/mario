@@ -39,7 +39,7 @@ def play():
 
         gf.check_inputs(player=pc)
 
-        if stats.current_stage < 4 and stats.current_stage != -1:
+        if stats.current_stage < stats.credits_stage and stats.current_stage != -1:
             camera.update(pc)
         if stats.current_stage != -1:
             gf.update_player(player=pc, platforms=sm.platforms, enemies=sm.enemies, warp_zones=sm.warp_zones)

@@ -49,9 +49,9 @@ class StageManager:
         self.time_start = pygame.time.get_ticks()
         self.time_elapsed = 0
         # set up bg_color
-        if stage in [1, 3]:
+        if stage in [1, 3, 5, 7]:
             self.settings.bg_color = (90, 148, 252)
-        if stage in [2]:
+        if stage in [2, 4]:
             self.settings.bg_color = (0, 0, 0)
         if stage in [-1, self.stats.credits_stage]:
             self.settings.bg_color = (0, 0, 0)
@@ -71,7 +71,7 @@ class StageManager:
             'c': ['castle', pygame.image.load('images/Tile/castle.png')],
             'd': ['ground', pygame.image.load('images/Tile/ground2.png')],
             'e': ['ground', pygame.image.load('images/Tile/ground3.png')],
-            '|': ['coral', pygame.image.load('images/Tile/coral.png')],
+            '|': ['ground', pygame.image.load('images/Tile/coral.png')],
             'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
             'o': ['ground', pygame.image.load('images/Tile/barrier.png')],
             'x': ['ground', pygame.image.load('images/Tile/barrier2.png')],
@@ -109,6 +109,14 @@ class StageManager:
             self.load('stage/stage2.txt', tile_dict)
         if stage == 3:
             self.load('stage/stage3.txt', tile_dict)
+        if stage == 4:
+            self.load('stage/stage4.txt', tile_dict)
+        if stage == 5:
+            self.load('stage/stage5.txt', tile_dict)
+        if stage == 6:
+            self.load('stage/stage6.txt', tile_dict)
+        if stage == 7:
+            self.load('stage/stage7.txt', tile_dict)
         if stage == self.stats.credits_stage:  # credits screen
             self.load('stage/credits.txt', tile_dict)
             for i in range(0, 18):
@@ -116,12 +124,14 @@ class StageManager:
 
         # load music
         pygame.mixer.stop()
-        if stage in [1]:  # overworld stages
+        if stage in [1, 3, 5, 7]:  # overworld stages
             self.bgm = pygame.mixer.Sound('audio/overworld.ogg')
         elif stage in [2]:  # underground stages
             self.bgm = pygame.mixer.Sound('audio/underground.ogg')
-        elif stage in [3]:  # underwater stages
+        elif stage in [6]:  # underwater stages
             self.bgm = pygame.mixer.Sound('audio/underwater.ogg')
+        elif stage in [4]:
+            self.bgm = pygame.mixer.Sound('audio/castle.ogg')
         elif stage == self.stats.credits_stage:  # credits screen
             self.bgm = pygame.mixer.Sound('audio/ending.ogg')
         self.bgm.play(-1)

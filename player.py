@@ -186,10 +186,15 @@ class Player(Sprite):
                         self.invincible = True
                         self.invin_start_time = pygame.time.get_ticks()
                         s.kill()
-                    if s.tag in ['brick', 'ground', 'pipe']:
+                    if s.tag in ['brick', 'ground', 'pipe', 'bridge']:
                         self.collide_brick(s)
                     if s.tag == 'mystery':
                         self.collide_mystery(s)
+                    if s.tag == 'axe':
+                        for b in self.sm.platforms:
+                            if b.tag == 'bridge':
+                                b.kill()
+                        s.kill()
                     if s.tag == 'win':
                         if s.rect.centerx - 8 <= self.rect.centerx <= s.rect.centerx + 8:
                             pygame.mixer.stop()
