@@ -53,6 +53,8 @@ class StageManager:
             self.settings.bg_color = (90, 148, 252)
         if stage in [2, 4]:
             self.settings.bg_color = (0, 0, 0)
+        if stage in [6]:
+            self.settings.bg_color = (90, 90, 255)
         if stage in [-1, self.stats.credits_stage]:
             self.settings.bg_color = (0, 0, 0)
 
