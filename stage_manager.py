@@ -74,7 +74,7 @@ class StageManager:
             'd': ['ground', pygame.image.load('images/Tile/ground2.png')],
             'e': ['ground', pygame.image.load('images/Tile/ground3.png')],
             '|': ['ground', pygame.image.load('images/Tile/coral.png')],
-            'f': ['flower', pygame.image.load('images/Tile/flower.bmp')],
+            'i': ['coin', pygame.image.load('images/Tile/coin1.png')],
             'o': ['ground', pygame.image.load('images/Tile/barrier.png')],
             'x': ['ground', pygame.image.load('images/Tile/barrier2.png')],
             'S': ['ground', pygame.image.load('images/Tile/stone.png')],
@@ -105,16 +105,24 @@ class StageManager:
 
         if stage == 1:
             self.load('stage/stage1.txt', tile_dict)  # build map form txt file
-            self.warp_zones.add(WarpZone('start', id=1, left=28*16, bot=10*16))
-            self.warp_zones.add(WarpZone('end', id=1, left=179*16, bot=10*16))
+            self.warp_zones.add(WarpZone('start', id=1, left=46*16, bot=8*16))
+            self.warp_zones.add(WarpZone('end', id=1, left=254*16, bot=3*16))
+            self.warp_zones.add(WarpZone('start', id=2, left=287*16, bot=9*16))
+            self.warp_zones.add(WarpZone('end', id=2, left=179*16, bot=10*16))
         if stage == 2:
             self.load('stage/stage2.txt', tile_dict)
+            self.warp_zones.add(WarpZone('start', id=1, left=171 * 16, bot=7 * 16))
+            self.warp_zones.add(WarpZone('end', id=1, left=215 * 16, bot=10 * 16))
         if stage == 3:
             self.load('stage/stage3.txt', tile_dict)
         if stage == 4:
             self.load('stage/stage4.txt', tile_dict)
         if stage == 5:
             self.load('stage/stage5.txt', tile_dict)
+            self.warp_zones.add(WarpZone('start', id=1, left=103 * 16, bot=8 * 16))
+            self.warp_zones.add(WarpZone('end', id=1, left=236 * 16, bot=4 * 16))
+            self.warp_zones.add(WarpZone('start', id=2, left=253 * 16, bot=10 * 16))
+            self.warp_zones.add(WarpZone('end', id=2, left=115 * 16, bot=10 * 16))
         if stage == 6:
             self.load('stage/stage6.txt', tile_dict)
         if stage == 7:

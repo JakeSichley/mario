@@ -161,6 +161,15 @@ class Player(Sprite):
             sprites_hit = pygame.sprite.spritecollide(self, platforms, False)
             if sprites_hit:
                 for s in sprites_hit:
+                    if s.tag == 'coin':
+                        self.stats.coins += 1
+                        self.stats.update_coins()
+                        self.coin_sound.play()
+                        self.stats.score += 200
+                        self.hud.prep_score()
+                        self.hud.prep_coins()
+                        self.hud.prep_lives()
+                        s.kill()
                     if s.tag == 'mushroom':
                         self.stats.score += 1000
                         self.hud.prep_score()
