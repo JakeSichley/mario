@@ -197,10 +197,8 @@ class Player(Sprite):
                         self.invincible = True
                         self.invin_start_time = pygame.time.get_ticks()
                         s.kill()
-                    if s.tag in ['brick', 'ground', 'pipe', 'bridge']:
+                    if s.tag in ['brick', 'ground', 'pipe', 'bridge', 'mystery']:
                         self.collide_brick(s)
-                    if s.tag == 'mystery':
-                        self.collide_mystery(s)
                     if s.tag == 'axe':
                         for b in self.sm.platforms:
                             if b.tag == 'bridge':
@@ -480,44 +478,34 @@ class Player(Sprite):
             self.gameover_sound.play()
 
     def collide_mystery(self, box):
-        if self.vel.y >= 0 and self.rect.top < box.rect.top:
-            self.rect.bottom = box.rect.top + 1
-            self.y = float(self.rect.y)
-            self.is_grounded = True
-            self.vel.y = 0
-        if self.vel.y < 0 and self.rect.top - 1 < box.rect.bottom < self.rect.bottom:
-            self.rect.top = box.rect.bottom
-            self.y = float(self.rect.y)
-            self.vel.y = 0
-            # hit here
-            box.kill()
-            x = box.rect.x
-            y = box.rect.bottom
-            self.sm.spawn_sprite(tag='ground', img=pygame.image.load('images/Tile/box_hit.png'), x=x, y=y)
-            if box.item == 'coin':
-                self.sm.spawn_sprite(tag=box.item, img=pygame.image.load('images/Tile/coin.png'), x=x, y=y-8)
-                self.stats.coins += 1
-                self.stats.update_coins()
-                self.coin_sound.play()
-                self.stats.score += 200
-                self.hud.prep_score()
-                self.hud.prep_coins()
-                self.hud.prep_lives()
-            if box.item == 'level_up':
-                self.item_appear_sound.play()
-                if self.level < 2:
-                    self.sm.spawn_sprite(tag='mushroom',
-                                         img=pygame.image.load('images/Tile/mushroom.png'), x=x, y=y - 16)
-                else:
-                    self.sm.spawn_sprite(tag='flower', img=pygame.image.load('images/Tile/flower.bmp'), x=x, y=y - 16)
-            if box.item == '1up_mushroom':
-                self.item_appear_sound.play()
-                self.sm.spawn_sprite(tag='1up_mushroom',
-                                     img=pygame.image.load('images/Tile/1upmushroom.png'), x=x, y=y - 16)
-            if box.item == 'star':
-                self.item_appear_sound.play()
-                self.sm.spawn_sprite(tag='star',
-                                     img=pygame.image.load('images/Tile/star.png'), x=x, y=y - 16)
+        box.kill()
+        x = box.rect.x
+        y = box.rect.bottom
+        self.sm.spawn_sprite(tag='ground', img=pygame.image.load('images/Tile/box_hit.png'), x=x, y=y)
+        if box.item == 'coin':
+            self.sm.spawn_sprite(tag=box.item, img=pygame.image.load('images/Tile/coin.png'), x=x, y=y-8)
+            self.stats.coins += 1
+            self.stats.update_coins()
+            self.coin_sound.play()
+            self.stats.score += 200
+            self.hud.prep_score()
+            self.hud.prep_coins()
+            self.hud.prep_lives()
+        if box.item == 'level_up':
+            self.item_appear_sound.play()
+            if self.level < 2:
+                self.sm.spawn_sprite(tag='mushroom',
+                                     img=pygame.image.load('images/Tile/mushroom.png'), x=x, y=y - 16)
+            else:
+                self.sm.spawn_sprite(tag='flower', img=pygame.image.load('images/Tile/flower.bmp'), x=x, y=y - 16)
+        if box.item == '1up_mushroom':
+            self.item_appear_sound.play()
+            self.sm.spawn_sprite(tag='1up_mushroom',
+                                 img=pygame.image.load('images/Tile/1upmushroom.png'), x=x, y=y - 16)
+        if box.item == 'star':
+            self.item_appear_sound.play()
+            self.sm.spawn_sprite(tag='star',
+                                 img=pygame.image.load('images/Tile/star.png'), x=x, y=y - 16)
 
     def collide_brick(self, brick):
         c = self.rect.clip(brick.rect)  # collision rect
@@ -531,9 +519,12 @@ class Player(Sprite):
                 self.rect.top = brick.rect.bottom
                 self.y = float(self.rect.y)
                 self.vel.y = 0
-                if brick.tag == 'brick' and self.level > 1:
-                    brick.kill()
-                    self.break_brick_sound.play()
+                if brick.tag == 'brick':
+                    if self.level > 1:
+                        brick.kill()
+                        self.break_brick_sound.play()
+                elif brick.tag == 'mystery':
+                    self.collide_mystery(brick)
         if c.width < c.height:
             if self.rect.right > brick.rect.left > self.rect.left:
                 self.vel.x = 0

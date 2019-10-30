@@ -100,7 +100,7 @@ class Goomba(Enemy):
         sprites_hit = pygame.sprite.spritecollide(self, sprites, False)
         if sprites_hit:
             for s in sprites_hit:
-                if s.tag in ['brick', 'ground', 'pipe']:
+                if s.tag in ['brick', 'ground', 'pipe', 'mystery']:
                     c = self.rect.clip(s.rect)  # collision rect
                     if c.width >= c.height:
                         if self.vely >= 0:
@@ -161,7 +161,7 @@ class KoopaTroopa(Enemy):
         if sprites_hit:
             for s in sprites_hit:
                 # Enemy, ground can't be broke, brick can, pipe is pipe
-                if s.tag in ['brick', 'ground', 'pipe']:
+                if s.tag in ['brick', 'ground', 'pipe', 'mystery']:
                     c = self.rect.clip(s.rect)  # collision rect
                     if c.width >= c.height:
                         if self.vely >= 0:

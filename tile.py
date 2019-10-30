@@ -66,7 +66,7 @@ class Mushroom(Tile):
         sprites_hit = pygame.sprite.spritecollide(self, sprites, False)
         if sprites_hit:
             for s in sprites_hit:
-                if s.tag in ['brick', 'ground', 'pipe']:
+                if s.tag in ['brick', 'ground', 'pipe', 'mystery']:
                     c = self.rect.clip(s.rect)  # collision rect
                     if c.width >= c.height:
                         if self.vely >= 0:
@@ -76,3 +76,5 @@ class Mushroom(Tile):
                             self.vely = 0
                     if c.width < c.height:
                         self.speed *= -1
+                        self.x += self.speed
+                        self.rect.x = int(self.x)
