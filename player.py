@@ -110,6 +110,8 @@ class Player(Sprite):
         self.live_up_sound = pygame.mixer.Sound('audio/1-up.wav')
         self.die_sound = SoundClip('audio/die.wav')
         self.stage_clear_sound = SoundClip('audio/stage_clear.wav')
+        self.world_clear_sound = SoundClip('audio/world_clear.wav')
+        self.clear_sound = self.stage_clear_sound
         self.stomp_sound = pygame.mixer.Sound('audio/stomp.wav')
         self.level_up_sound = pygame.mixer.Sound('audio/powerup.wav')
         self.fire_sound = pygame.mixer.Sound('audio/fire.wav')
@@ -127,7 +129,7 @@ class Player(Sprite):
     def update(self, platforms, enemies, warp_zones):
         # check stage clear:
         if self.stage_clear:
-            if self.stage_clear_sound.is_finished():
+            if self.clear_sound.is_finished():
                 self.stats.current_stage += 1
                 self.sm.load_stage(self.stats.current_stage, self.hud)
                 self.reset()
@@ -207,7 +209,11 @@ class Player(Sprite):
                     if s.tag == 'win':
                         if s.rect.centerx - 8 <= self.rect.centerx <= s.rect.centerx + 8:
                             pygame.mixer.stop()
-                            self.stage_clear_sound.play()
+                            if self.stats.current_stage % 4 == 0:
+                                self.clear_sound = self.world_clear_sound
+                            else:
+                                self.clear_sound = self.stage_clear_sound
+                            self.clear_sound.play()
                             self.stage_clear = True
                             score = int(abs(s.rect.bottom - self.rect.bottom) * 10 +
                                         ((self.sm.time_limit - self.sm.time_elapsed)//1000) * 10)
