@@ -93,7 +93,7 @@ class StageManager:
             'C': ['mystery', 'coin', pygame.image.load('images/Tile/box.png')],
             'L': ['mystery', 'level_up', pygame.image.load('images/Tile/box.png')],
             'l': ['mystery', '1up_mushroom', pygame.image.load('images/Tile/box.png')],
-            's': ['star', pygame.image.load('images/Tile/star.png')],
+            's': ['mystery', 'star', pygame.image.load('images/Tile/box.png')],
             'q': ['castle', pygame.image.load('images/Tile/castle2.png')],
             'W': ['tree', pygame.image.load('images/Tile/wood.png')],
             'N': ['ground', pygame.image.load('images/Tile/tree1.png')],
@@ -130,7 +130,7 @@ class StageManager:
             self.load('stage/stage6.txt', tile_dict)
         if stage == 7:
             self.load('stage/stage7.txt', tile_dict)
-        if stage == 7:
+        if stage == 8:
             self.load('stage/stage8.txt', tile_dict)
         if stage == self.stats.credits_stage:  # credits screen
             self.load('stage/credits.txt', tile_dict)
@@ -166,7 +166,7 @@ class StageManager:
                         if c == 'm':
                             self.platforms.add(Tile(
                                 self.screen, tile_dict[c][0], tile_dict[c][1], col * 16 - 16, row * 16 + 16))
-                        elif c in ['C', 'L', 'l']:
+                        elif c in ['C', 'L', 'l', 's']:
                             box = MysteryBox(self.screen, tile_dict[c][0], tile_dict[c][2], col * 16, row * 16)
                             box.set_item(tile_dict[c][1])
                             self.platforms.add(box)
@@ -184,7 +184,7 @@ class StageManager:
     def spawn_sprite(self, tag, img, x, y):
         if tag == 'coin':
             self.platforms.add(PopupCoin(self.screen, tag, img, x, y))
-        elif tag == 'mushroom' or tag == '1up_mushroom':
+        elif tag in ['mushroom', '1up_mushroom', 'star']:
             self.platforms.add(Mushroom(self.screen, tag, img, x, y))
         else:
             self.platforms.add(Tile(self.screen, tag, img, x, y))

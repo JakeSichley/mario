@@ -511,8 +511,13 @@ class Player(Sprite):
                 else:
                     self.sm.spawn_sprite(tag='flower', img=pygame.image.load('images/Tile/flower.bmp'), x=x, y=y - 16)
             if box.item == '1up_mushroom':
+                self.item_appear_sound.play()
                 self.sm.spawn_sprite(tag='1up_mushroom',
                                      img=pygame.image.load('images/Tile/1upmushroom.png'), x=x, y=y - 16)
+            if box.item == 'star':
+                self.item_appear_sound.play()
+                self.sm.spawn_sprite(tag='star',
+                                     img=pygame.image.load('images/Tile/star.png'), x=x, y=y - 16)
 
     def collide_brick(self, brick):
         c = self.rect.clip(brick.rect)  # collision rect
