@@ -100,6 +100,8 @@ class StageManager:
             'Y': ['ground', pygame.image.load('images/Tile/tree3.png')],
             ';': ['bush', pygame.image.load('images/Tile/small_tree.png')],
             ':': ['bush', pygame.image.load('images/Tile/big_tree.png')],
+            '^': ['ground', pygame.image.load('images/Tile/bridge.png')],
+            '&': ['fence', pygame.image.load('images/Tile/fence2.png')],
             'F': ['bush', pygame.image.load('images/Tile/fence.png')],
             'w': ['win', pygame.image.load('images/Tile/flag.png')]}
 
