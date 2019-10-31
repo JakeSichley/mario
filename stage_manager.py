@@ -1,5 +1,6 @@
 from tile import *
 from enemy import *
+from enemy2 import *
 from pygame.sprite import Group
 from warp_zone import WarpZone
 
@@ -26,7 +27,7 @@ class StageManager:
                     player.die()
 
         for e in self.enemies:
-            e.update(player, self.platforms)
+            e.update(player, self.platforms, self.enemies)
 
     def draw(self, camera):
         for p in self.platforms:
@@ -117,6 +118,12 @@ class StageManager:
                     # create enemy
                     if c == 'G':  # goomba
                         self.enemies.add(Goomba(self.screen, self.settings, col * 16, row * 16))
+                    elif c == 'K':  # goomba
+                        self.enemies.add(KoopaTroopaGreen(self.screen, self.settings, col * 16, row * 16))
+                    elif c == 'R':  # goomba
+                        self.enemies.add(KoopaParatroopaRed(self.screen, self.settings, col * 16, row * 16))
+                    elif c == 'I':
+                        self.enemies.add(FireBar(self.screen, self.settings, col * 16, row * 16))
                     col += 1
                 row += 1
         f.close()

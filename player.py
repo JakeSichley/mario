@@ -475,7 +475,7 @@ class Player(Sprite):
         if self.invincible:
             self.stats.score += enemy.point
             self.hud.prep_score()
-            enemy.get_hit()
+            enemy.die()
             return
 
         if enemy.tag != 'boss':
@@ -487,9 +487,14 @@ class Player(Sprite):
                 self.vel.y = -6
                 self.y += self.vel.y
                 self.rect.y = int(self.y)
-                enemy.die()
+                enemy.hit(self)
                 return
-        self.get_hit()
+
+            elif enemy.m_dangerous:
+                self.get_hit()
+
+        if enemy.tag == 'boss':
+            self.get_hit()
 
     def draw1(self):  # draw with camera
         self.update_animation()

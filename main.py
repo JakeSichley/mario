@@ -5,6 +5,7 @@ from camera import Camera
 from hud import HUD
 from game_stats import GameStats
 from enemy import *
+from enemy2 import *
 from stage_manager import StageManager
 from credits import CreditsScreen
 from gameover import GameoverScreen

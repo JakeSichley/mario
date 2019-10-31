@@ -3,6 +3,17 @@ from pygame.sprite import Sprite
 from timer import Timer
 from pygame.font import Font
 
+# Add fire stick with boss tag and deleted (re: 'return' only) die function
+'''
+Fire stick is a list of images
+coordinates are based off of sin and cos values for current angle
+multiple coefficients by the radius of each fireball
+'''
+
+
+def load(image):
+    return pygame.image.load(image)
+
 
 class Enemy(Sprite):
     def __init__(self, screen, settings, frames, point, left, bot):
@@ -31,11 +42,13 @@ class Enemy(Sprite):
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
+    # General functionality called gethit that updates enemy logic based on state
+
     def die(self):
         self.dead = True
         self.point_start_time = pygame.time.get_ticks()
 
-    def update(self, player, sprites):
+    def update(self, player, sprites, enemies):
         if self.dead:
             if pygame.time.get_ticks() - self.point_start_time >= self.point_time:
                 self.kill()
@@ -61,9 +74,11 @@ class Goomba(Enemy):
         self.speed = 1
         self.gravity = 0.3
         self.vely = 0
+        self.m_dangerous = True
+        self.e_dangerous = False
 
-    def update(self, player, sprites):
-        super().update(player, sprites)
+    def update(self, player, sprites, enemies):
+        super().update(player, sprites, enemies)
 
         # check falling off
         if self.rect.y > self.screen_rect.height:
@@ -89,6 +104,7 @@ class Goomba(Enemy):
         sprites_hit = pygame.sprite.spritecollide(self, sprites, False)
         if sprites_hit:
             for s in sprites_hit:
+                # Enemy, ground can't be broke, brick can, pipe is pipe
                 if s.tag in ['brick', 'ground', 'pipe']:
                     c = self.rect.clip(s.rect)  # collision rect
                     if c.width >= c.height:
@@ -99,3 +115,15 @@ class Goomba(Enemy):
                             self.vely = 0
                     if c.width < c.height:
                         self.speed *= -1
+
+        collisions = pygame.sprite.spritecollide(self, enemies, False)
+        if collisions:
+            for enemy in collisions:
+                if enemy != self:
+                    if enemy.e_dangerous:
+                        self.die()
+                    else:
+                        self.speed *= -1
+
+    def hit(self, player):
+        self.die()
