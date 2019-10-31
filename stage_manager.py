@@ -123,7 +123,7 @@ class StageManager:
                     elif c == 'R':  # goomba
                         self.enemies.add(KoopaParatroopaRed(self.screen, self.settings, col * 16, row * 16))
                     elif c == 'I':
-                        self.enemies.add(FireBar(self.screen, self.settings, col * 16, row * 16))
+                        self.enemies.add(CheepCheepU(self.screen, self.settings, col * 16, row * 16))
                     col += 1
                 row += 1
         f.close()
