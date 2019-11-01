@@ -133,8 +133,14 @@ class StageManager:
                 self.screen, 'ground', 2474, self.screen_rect.centery, -1, 'vertical'))
         if stage == 3:
             self.load('stage/stage3.txt', tile_dict)
+            self.moving_platforms.add(MovingPlatform(self.screen, 'ground', 880, 70, 1, 'vertical', y_range=130))
+            self.moving_platforms.add(MovingPlatform(self.screen, 'ground', 1320, 132, 1, 'horizontal', x_range=60))
+            self.moving_platforms.add(MovingPlatform(self.screen, 'ground', 1440, 150, -1, 'horizontal', x_range=60))
+            self.moving_platforms.add(MovingPlatform(self.screen, 'ground', 2058, 80, -1, 'horizontal', x_range=80))
         if stage == 4:
             self.load('stage/stage4.txt', tile_dict)
+            self.moving_platforms.add(MovingPlatform(
+                self.screen, 'ground', 2100, 80, -1, 'horizontal', x_range=100, size='med'))
         if stage == 5:
             self.load('stage/stage5.txt', tile_dict)
             self.warp_zones.add(WarpZone('start', id_num=1, left=103 * 16, bot=8 * 16))
@@ -147,6 +153,11 @@ class StageManager:
             self.load('stage/stage7.txt', tile_dict)
         if stage == 8:
             self.load('stage/stage8.txt', tile_dict)
+            self.moving_platforms.add(MovingPlatform(self.screen, 'ground', 1420, 0, 1, 'vertical', size='small'))
+            self.moving_platforms.add(MovingPlatform(
+                self.screen, 'ground', 1372, self.screen_rect.bottom, -1, 'vertical', size='small'))
+            self.moving_platforms.add(MovingPlatform(
+                self.screen, 'ground', 2166, 90, 1, 'horizontal', size='med', x_range=50))
         if stage == self.stats.credits_stage:  # credits screen
             self.load('stage/credits.txt', tile_dict)
             for i in range(0, 18):
