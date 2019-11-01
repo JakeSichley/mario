@@ -12,7 +12,7 @@ class StageManager:
         self.stats = stats
         self.settings = settings
         self.screen = screen
-        self.screen_rect = self.screen.get_rect()
+        self.screen_rect = screen.get_rect()
         self.enemies = Group()
         self.platforms = Group()
         self.warp_zones = Group()
@@ -125,15 +125,12 @@ class StageManager:
             self.load('stage/stage2.txt', tile_dict)
             self.warp_zones.add(WarpZone('start', id_num=1, left=171 * 16, bot=7 * 16))
             self.warp_zones.add(WarpZone('end', id_num=1, left=215 * 16, bot=10 * 16))
-
             self.moving_platforms.add(MovingPlatform(self.screen, 'ground', 2238, 0, 1, 'vertical'))
             self.moving_platforms.add(MovingPlatform(self.screen, 'ground', 2474, 0, -1, 'vertical'))
             self.moving_platforms.add(MovingPlatform(
                 self.screen, 'ground', 2238, self.screen_rect.centery, 1, 'vertical'))
-
             self.moving_platforms.add(MovingPlatform(
                 self.screen, 'ground', 2474, self.screen_rect.centery, -1, 'vertical'))
-
         if stage == 3:
             self.load('stage/stage3.txt', tile_dict)
         if stage == 4:
