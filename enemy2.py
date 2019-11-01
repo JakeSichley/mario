@@ -57,6 +57,8 @@ class Enemy2(Sprite):
         self.y = float(self.rect.y)
 
     # General functionality called gethit that updates enemy logic based on state
+    def hit(self, player):
+        pass
 
     def die(self):
         self.dead = True
